@@ -1,0 +1,30 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"declaration": true,
+		"esModuleInterop": true,
+		"importsNotUsedAsValues": "error",
+		"incremental": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"removeComments": true,
+		"sourceMap": false,
+		"skipLibCheck": true,
+		"strict": true,
+		"outDir": "lib",
+		"lib": ["DOM", "ES2018"],
+		"tsBuildInfoFile": ".output/.tsbuildinfo"
+	},
+	"include": [
+		"src/**/*.ts"
+	],
+	"exclude": [
+		".output",
+		"lib",
+		"node_modules"
+	]
+}

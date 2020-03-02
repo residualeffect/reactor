@@ -1,0 +1,33 @@
+{
+  "name": "@residualeffect/reactor",
+  "version": "1.0.0",
+  "description": "A lightweight reactive programming library for javascript that includes automatic dependency tracking for computed values.",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "clean": "rimraf lib .output",
+    "lint": "eslint **/*.ts",
+    "test": "jest --coverage --runInBand --no-color --verbose",
+    "build:tsc": "tsc",
+    "build": "run-s clean lint test build:tsc",
+    "test-watch": "jest --watch",
+    "watch": "tsc --watch"
+  },
+  "author": "ResidualEffect",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^25.1.3",
+    "@typescript-eslint/eslint-plugin": "^2.21.0",
+    "@typescript-eslint/parser": "^2.21.0",
+    "eslint": "^6.8.0",
+    "jest": "^25.1.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {},
+  "files": [
+    "lib/"
+  ]
+}
