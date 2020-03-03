@@ -76,13 +76,7 @@ export function TrackDependencies<T>(valueGenerator: () => T): [T, DependencyMap
 		value = valueGenerator();
 	}
 	catch (e) {
-		if (e instanceof ValueGeneratorError) {
-			error = new ValueGeneratorError(valueGenerator, e);
-		} else if (e instanceof Error) {
-			error = new ValueGeneratorError(valueGenerator, undefined, e.message);
-		} else {
-			error = new ValueGeneratorError(valueGenerator, undefined, e+"");
-		}
+		error = e;
 	}
 
 	const dependencies = FinishTracking();

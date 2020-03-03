@@ -1,43 +1,21 @@
-import { ReadOnlyObservable, Unsubscribe, Observer } from "./ReadOnlyObservable";
-import { TrackDependencies, DependencyMap, ReportUsage } from "./DependencyTracking";
+import { ReadOnlyObservable } from "./ReadOnlyObservable";
+import { TrackDependencies, DependencyMap, ValueGeneratorError } from "./DependencyTracking";
 
 export class Computed<T> extends ReadOnlyObservable<T> {
 	public constructor(valueGenerator: () => T) {
-		super(valueGenerator());
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		super(undefined!);
 
 		this._valueGenerator = valueGenerator;
 
 		this._isRefreshing = false;
-		this._isListening = false;
 		this._dependencies = {};
-	}
 
-	public get Value(): T {
-		ReportUsage(this as ReadOnlyObservable<unknown>);
-		return this._isListening ? this._value : this.RefreshValue();
-	}
-
-	public Subscribe(observer: Observer<T>): Unsubscribe {
-		const unsubscribe = super.Subscribe(observer);
-		this.UpdateListeningStatus();
-
-		return (): void => {
-			unsubscribe();
-			this.UpdateListeningStatus();
-		};
+		this.RefreshValue();
 	}
 
 	public get DependencyCount(): number {
 		return Object.keys(this._dependencies).length;
-	}
-
-	private UpdateListeningStatus(): void {
-		if (this.SubscriptionCount === 1) {
-			this._isListening = true;
-			this.RefreshValue();
-		} else if (this.SubscriptionCount === 0) {
-			this.StopListening();
-		}
 	}
 
 	private RefreshValue = (): T => {
@@ -53,31 +31,21 @@ export class Computed<T> extends ReadOnlyObservable<T> {
 			this.UpdateDependencies(dependencies);
 			this.SetIfChanged(value);
 		}
+		catch (e) {
+			if (e instanceof ValueGeneratorError) {
+				throw new ValueGeneratorError(this._valueGenerator, e);
+			} else if (e instanceof Error) {
+				throw new ValueGeneratorError(this._valueGenerator, undefined, e.message);
+			} else {
+				throw new ValueGeneratorError(this._valueGenerator, undefined, e+"");
+			}
+		}
 		finally {
 			this._isRefreshing = false;
 		}
 
 		return this._value;
 	};
-
-	private StopListening(): void {
-		if (!this._isListening) {
-			throw "Stopped listening again after listeners were already stopped!";
-		}
-
-		for (const key in this._dependencies) {
-			const dependency = this._dependencies[key];
-
-			if (dependency.Unsubscribe !== undefined) {
-				dependency.Unsubscribe();
-				dependency.Unsubscribe = undefined;
-			} else {
-				throw "Not observing a dependency when it was supposed to!";
-			}
-		}
-
-		this._isListening = false;
-	}
 
 	private UpdateDependencies(newDependencies: DependencyMap): void {
 		for (const key in this._dependencies) {
@@ -88,22 +56,13 @@ export class Computed<T> extends ReadOnlyObservable<T> {
 				}
 
 				delete this._dependencies[key];
-			} else if(this._isListening) {
-				const dependency = this._dependencies[key];
-				if (dependency.Unsubscribe === undefined) {
-					dependency.Unsubscribe = dependency.Observable.Subscribe(this.RefreshValue);
-				}
 			}
 		}
 
 		for (const key in newDependencies) {
 			if (this._dependencies[key] === undefined) {
 				const dependency = newDependencies[key];
-
-				if (this._isListening) {
-					dependency.Unsubscribe = dependency.Observable.Subscribe(this.RefreshValue);
-				}
-
+				dependency.Unsubscribe = dependency.Observable.Subscribe(this.RefreshValue);
 				this._dependencies[key] = dependency;
 			}
 		}
@@ -112,6 +71,5 @@ export class Computed<T> extends ReadOnlyObservable<T> {
 	private readonly _valueGenerator: () => T;
 
 	private _isRefreshing: boolean;
-	private _isListening: boolean;
 	private readonly _dependencies: DependencyMap;
 }

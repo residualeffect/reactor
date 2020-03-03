@@ -1,6 +1,8 @@
 # Changelog
 
-## [1.1.0] - 2020-03-02
+## [1.2.0] - 2020-03-02
+### Changed
+* Computed observables always track their dependencies and refresh automatically
 ### Fixed
 * Improved error handling and provide a better error message when something goes wrong during computed value generation
 
