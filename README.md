@@ -1,6 +1,6 @@
 # reactor
 
-A lightweight (1.5KB minified + gzip) reactive programming library for javascript that includes automatic dependency tracking for computed values.
+A lightweight reactive programming library for javascript that includes automatic dependency tracking for computed values.
 
 [Changelog](CHANGELOG.md)
 
