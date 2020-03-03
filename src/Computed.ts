@@ -42,7 +42,7 @@ export class Computed<T> extends ReadOnlyObservable<T> {
 
 	private RefreshValue = (): T => {
 		if (this._isRefreshing) {
-			throw "Circular dependency detected!";
+			throw new Error("Circular dependency detected!");
 		}
 
 		this._isRefreshing = true;

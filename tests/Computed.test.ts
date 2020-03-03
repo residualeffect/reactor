@@ -1,5 +1,6 @@
 import { Observable } from "../src/Observable";
 import { Computed } from "../src/Computed";
+import { IsTracking } from "../src/DependencyTracking";
 import { ThenObserverCallCountIs, ThenObserverWasCalled } from "./TestHelpers";
 
 let mockObserver: jest.Mock;
@@ -252,47 +253,6 @@ test("Should be able to generate a computed using another computed", () => {
 	ThenObserverCallCountIs(mockObserver, 1);
 });
 
-test("Should detect computed value generators that depend on themselves", () => {
-	let c: Computed<number> = new Computed(() => 3);
-	c = new Computed(() => c.Value + 3);
-
-	const action = (): void => {
-		c.Value;
-	};
-
-	expect(action).toThrow("Circular dependency detected!");
-});
-
-
-test("Should detect computed value generators that indirectly depend on themselves", () => {
-	let e = new Computed(() => 4);
-	const d = new Computed(() => e.Value);
-	e = new Computed(() => d.Value);
-
-	const action = (): void => {
-		e.Value;
-	};
-
-	expect(action).toThrow("Circular dependency detected!");
-});
-
-test("Should detect circular dependencies for value generates that modify dependencies", () => {
-	const t = new Observable(3);
-	const c = new Computed(() => {
-		t.Value = t.Value * 2;
-
-		return t.Value;
-	});
-
-	c.Subscribe(mockObserver);
-
-	const action = (): void => {
-		t.Value = 8;
-	};
-
-	expect(action).toThrow("Circular dependency detected!");
-});
-
 test("Should track large dependency chains", () => {
 	const dependencyChain: Computed<number>[] = [];
 
@@ -349,4 +309,129 @@ test("Should handle large number of subscribers", () => {
 	for (let i = 0; i < 1000; i++) {
 		expect(manyComputed[i].Value).toBe(4 + i);
 	}
+});
+
+describe("Should handle errors gracefully", () => {
+	test("Should handle value generators that sometimes throw errors", () => {
+		let shouldFail = false;
+		const valueGenerator = (): number => {
+			if (shouldFail) {
+				throw new Error("TEST ERROR MESSAGE");
+			}
+			return 3;
+		};
+		const c = new Computed(valueGenerator);
+	
+		shouldFail = true;
+	
+		const action = (): void => {
+			c.Value;
+		};
+	
+		const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
+
+${valueGenerator}
+
+The error was: TEST ERROR MESSAGE`;
+	
+		expect(action).toThrow(new Error(expectedErrorMessage));
+	
+		expect(IsTracking()).toBe(false);
+	});
+	
+	test("Should handle value generators that sometimes throw string errors", () => {
+		let shouldFail = false;
+		const valueGenerator = (): number => {
+			if (shouldFail) {
+				throw "STRING ERROR MESSAGE";
+			}
+			return 3;
+		};
+		const c = new Computed(valueGenerator);
+	
+		shouldFail = true;
+	
+		const action = (): void => {
+			c.Value;
+		};
+	
+		const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
+
+${valueGenerator}
+
+The error was: STRING ERROR MESSAGE`;
+	
+		expect(action).toThrow(new Error(expectedErrorMessage));
+	
+		expect(IsTracking()).toBe(false);
+	});
+
+	test("Should detect computed value generators that depend on themselves", () => {
+		let c: Computed<number> = new Computed(() => 3);
+		const valueGenerator = (): number => c.Value + 3;
+		c = new Computed(valueGenerator);
+	
+		const action = (): void => {
+			c.Value;
+		};
+	
+		const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
+
+${valueGenerator}
+
+The error was: Circular dependency detected!`;
+	
+		expect(action).toThrow(new Error(expectedErrorMessage));
+	});
+	
+	
+	test("Should detect computed value generators that indirectly depend on themselves", () => {
+		let e = new Computed(() => 4);
+	
+		const outerValueGenerator = (): number => e.Value;
+		const d = new Computed(outerValueGenerator);
+	
+		const innerValueGenerator = (): number => d.Value;
+		e = new Computed(innerValueGenerator);
+	
+		const action = (): void => {
+			e.Value;
+		};
+	
+		const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
+
+${innerValueGenerator}
+
+Nested Value Generator (depth 1):
+
+${outerValueGenerator}
+
+Nested error (depth 1): Circular dependency detected!`;
+	
+		expect(action).toThrow(new Error(expectedErrorMessage));
+	});
+	
+	test("Should detect circular dependencies for value generates that modify dependencies", () => {
+		const t = new Observable(3);
+		const valueGenerator = (): number => {
+			t.Value = t.Value * 2;
+	
+			return t.Value;
+		};
+		const c = new Computed(valueGenerator);
+	
+		c.Subscribe(mockObserver);
+	
+		const action = (): void => {
+			t.Value = 8;
+		};
+	
+		const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
+
+${valueGenerator}
+
+The error was: Circular dependency detected!`;
+	
+		expect(action).toThrow(new Error(expectedErrorMessage));
+	});
 });
