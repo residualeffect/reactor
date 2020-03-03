@@ -45,14 +45,17 @@ export class Computed<T> extends ReadOnlyObservable<T> {
 			throw new Error("Circular dependency detected!");
 		}
 
-		this._isRefreshing = true;
+		try {
+			this._isRefreshing = true;
 
-		const [value, dependencies] = TrackDependencies(this._valueGenerator);
+			const [value, dependencies] = TrackDependencies(this._valueGenerator);
 
-		this.UpdateDependencies(dependencies);
-		this.SetIfChanged(value);
-
-		this._isRefreshing = false;
+			this.UpdateDependencies(dependencies);
+			this.SetIfChanged(value);
+		}
+		finally {
+			this._isRefreshing = false;
+		}
 
 		return this._value;
 	};

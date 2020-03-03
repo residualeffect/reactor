@@ -364,6 +364,10 @@ The error was: STRING ERROR MESSAGE`;
 		expect(action).toThrow(new Error(expectedErrorMessage));
 	
 		expect(IsTracking()).toBe(false);
+
+		shouldFail = false;
+
+		expect(c.Value).toBe(3);
 	});
 
 	test("Should detect computed value generators that depend on themselves", () => {
