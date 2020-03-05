@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.0] - 2020-03-05
+### Changed
+* Computed observables will only subscribe to dependencies when the computed value is being observed by something, to prevent memory leaks
+
 ## [1.2.0] - 2020-03-02
 ### Changed
 * Computed observables always track their dependencies and refresh automatically
