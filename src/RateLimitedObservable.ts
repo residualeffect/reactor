@@ -35,5 +35,5 @@ export class RateLimitedObservable<T> extends Observable<T> {
 	private _delay: number;
 
 	private _pendingValue!: T;
-	private _timeoutId?: number;
+	private _timeoutId?: NodeJS.Timeout;
 }
