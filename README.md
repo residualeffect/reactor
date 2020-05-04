@@ -35,6 +35,70 @@ console.log(t.Value);
 unsubscribe();
 ```
 
+## Observable arrays
+
+A basic observable works just fine for simple types, but when working with an array, mutations to the array require you to modify and the re-set the observable value.  ObservableArrays simplify this by providing data modification capabilities that notify subscribers.
+
+```ts
+import { ObservableArray } from "@residualeffect/reactor";
+
+// Create an observable array
+const t = new ObservableArray<number>([3]);
+
+// Observe changes
+const unsubscribe = t.Subscribe((newValue) => console.log(newValue));
+
+// Push a new value on to the array
+t.push(5);
+
+// Get current value (t is now [3,5])
+console.log(t.Value);
+
+// Note that modifying the value is not allowed
+t.Value.push(5); // ERROR !!!
+
+// But you can replace the entire array if you want
+t.Value = [6];
+
+// Get current value (t is now [6])
+console.log(t.Value);
+
+// Stop observing changes
+unsubscribe();
+```
+
+## Observable objects
+
+When using an observable for a complex object, you need to be careful to prevent unexpected modification to properties within the object.  ObservableObject can help this by carefully controlling when modifications are allowed and making sure observers are appropriately notified.
+
+```ts
+import { ObservableObject } from "@residualeffect/reactor";
+
+// Create an observable object
+const t = new ObservableObject<SomeType>({ PropertyA: "Hello", PropertyB: "World" });
+
+// Observe changes
+const unsubscribe = t.Subscribe((newValue) => console.log(newValue));
+
+// Get current value (Hello / World)
+console.log(t.Value);
+
+// Change value
+t.Value = { PropertyA: "Testing", PropertyB: "A Lot" };
+
+// Get new value (Testing / A Lot)
+console.log(t.Value);
+
+// Note that modifying the value is not allowed
+t.Value.PropertyA = "Tricky"; // ERROR !!!
+
+// However, you can apply updates to properties like so
+t.Update(x => { x.PropertyA = "Tricky"; });
+
+// Stop observing changes
+unsubscribe();
+```
+
 ## Computed Observables
 
 Computed observables are values that are automatically generated when other observable values change.  This library includes automatic dependency tracking for the computed observables you define.
@@ -61,17 +125,17 @@ t.Value = 5;
 unsubscribe();
 ```
 
-## Rate-Limited Observables
+## Filtering Updates to Observables
 
-Rate-limited observables are similar to standard observables except they will only notify subscribers after a given period of time has elapsed since the last change.
+Sometimes it is useful to filter updates to observables - for example, by limiting the rate at which the observable will modify and notify subscribers.
 
-These offer two modes: Debounce, and Throttle.  Debounce will notify subscribers x milliseconds after the last change, where as Throttle will notify subscribers at most x milliseconds since the first change that was made since the last notification.
+This library includes the ability to limit the rate of updates using a FilteredObservable with two modes of operation: Debounce, and Throttle.  Debounce will notify subscribers x milliseconds after the last change, whereas Throttle will notify subscribers at most x milliseconds after the first change that was made to the value since the last notification.
 
 ```ts
-import { RateLimitedObservable, RateLimitType } from "@residualeffect/reactor";
+import { FilteredObservable, RateLimiter, RateLimitType } from "@residualeffect/reactor";
 
 // Create a rate limited observable
-const r = new RateLimitedObservable(3, RateLimitType.Debounce, 200);
+const r = new FilteredObservable(3, RateLimiter(RateLimitType.Debounce, 200));
 
 // Observe changes
 const unsubscribe = r.Subscribe((newValue) => console.log(newValue));
@@ -106,9 +170,9 @@ To do this, start by implementing a react hook for using observables:
 
 ```ts
 import { useEffect, useState } from "react";
-import type { ReadOnlyObservable } from "@residualeffect/reactor";
+import type { BaseObservable } from "@residualeffect/reactor";
 
-export function useObservable<T>(observable: ReadOnlyObservable<T>): T {
+export function useObservable<T>(observable: BaseObservable<T>): T {
 	const [, triggerReact] = useState({});
 
 	useEffect(() => {
@@ -128,7 +192,7 @@ export const t = new Observable(3);
 export const c = new Computed(() => t.Value * 2);
 
 export function DoSomething() {
-	t.Update(oldValue => oldValue + 1);
+	t.Value = t.Value + 1;
 }
 ```
 
@@ -136,8 +200,8 @@ And then utilize your application logic in a react component:
 
 ```tsx
 const ExampleComponent: React.FC = () => {
-	const value = useAnObservable(t);
-	const computedValue = useAnObservable(c);
+	const value = useObservable(t);
+	const computedValue = useObservable(c);
 
 	return (
 		<>

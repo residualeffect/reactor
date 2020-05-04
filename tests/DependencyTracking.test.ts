@@ -31,11 +31,11 @@ The error was: STRING ERROR MESSAGE`;
 
 	expect(action).toThrow(new Error(expectedErrorMessage));
 
-	expect(IsTracking()).toBe(false);
+	expect(IsTracking()).toStrictEqual(false);
 
-	expect(shouldFail.Value).toBe(true);
+	expect(shouldFail.Value).toStrictEqual(true);
 
-	expect(c.Value).toBe(3);
+	expect(c.Value).toStrictEqual(3);
 });
 
 test("Should detect computed value generators that depend on themselves", () => {

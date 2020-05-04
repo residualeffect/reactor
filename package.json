@@ -1,6 +1,6 @@
 {
   "name": "@residualeffect/reactor",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "private": false,
   "author": "ResidualEffect",
   "description": "A lightweight reactive programming library for javascript that includes automatic dependency tracking for computed values.",

@@ -20,4 +20,7 @@
 		".output": true,
 		"lib": true,
 	},
+	"cSpell.words": [
+		"residualeffect"
+	],
 }

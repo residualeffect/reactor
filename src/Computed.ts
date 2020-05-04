@@ -1,7 +1,7 @@
-import { ReadOnlyObservable, Unsubscribe, Observer } from "./ReadOnlyObservable";
+import { BaseObservable, Unsubscribe, Observer } from "./BaseObservable";
 import { TrackDependencies, DependencyMap, ValueGeneratorError, ReportUsage } from "./DependencyTracking";
 
-export class Computed<T> extends ReadOnlyObservable<T> {
+export class Computed<T> extends BaseObservable<T> {
 	public constructor(valueGenerator: () => T) {
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		super(undefined!);
@@ -16,7 +16,7 @@ export class Computed<T> extends ReadOnlyObservable<T> {
 	}
 
 	public get Value(): T {
-		ReportUsage(this as ReadOnlyObservable<unknown>);
+		ReportUsage(this as BaseObservable<unknown>);
 
 		if (!this._isListening) {
 			this.RefreshValue();

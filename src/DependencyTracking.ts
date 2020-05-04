@@ -1,7 +1,7 @@
-import type { ReadOnlyObservable, Unsubscribe } from "./ReadOnlyObservable";
+import type { BaseObservable, Unsubscribe } from "./BaseObservable";
 
 export interface Dependency {
-	readonly Observable: ReadOnlyObservable<unknown>;
+	readonly Observable: BaseObservable<unknown>;
 	Unsubscribe?: Unsubscribe;
 }
 
@@ -45,7 +45,7 @@ export interface DependencyMap {
 
 const dependencyStack: DependencyMap[] = [];
 
-export function ReportUsage(observable: ReadOnlyObservable<unknown>): void {
+export function ReportUsage(observable: BaseObservable<unknown>): void {
 	if (dependencyStack.length > 0) {
 		const currentStack = dependencyStack[dependencyStack.length - 1];
 		if (currentStack[observable._observableId] === undefined) {

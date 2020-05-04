@@ -6,10 +6,10 @@ interface Subscriptions<T> {
 
 let observableId = 0;
 
-export type Observer<T> = (newValue: T, oldValue: T) => void;
+export type Observer<T> = (newValue: T) => void;
 export type Unsubscribe = () => void;
 
-export class ReadOnlyObservable<T> {
+export class BaseObservable<T> {
 	public constructor(initialValue: T) {
 		this._observableId = observableId++;
 
@@ -18,10 +18,6 @@ export class ReadOnlyObservable<T> {
 		this._nextSubscriptionId = 0;
 		this._subscriptionCount = 0;
 		this._subscriptions = {};
-	}
-
-	public get Value(): T {
-		return this.Get();
 	}
 
 	public Subscribe(observer: Observer<T>): Unsubscribe {
@@ -47,7 +43,7 @@ export class ReadOnlyObservable<T> {
 	}
 
 	protected Get(): T {
-		ReportUsage(this as ReadOnlyObservable<unknown>);
+		ReportUsage(this as BaseObservable<unknown>);
 		return this._value;
 	}
 
@@ -56,15 +52,13 @@ export class ReadOnlyObservable<T> {
 			return;
 		}
 
-		this.SetValueAndNotifyObservers(newValue);
+		this._value = newValue;
+		this.NotifyObservers();
 	}
 
-	protected SetValueAndNotifyObservers(newValue: T): void {
-		const oldValue = this._value;
-		this._value = newValue;
-
+	protected NotifyObservers(): void {
 		for (const key in this._subscriptions) {
-			this._subscriptions[key](newValue, oldValue);
+			this._subscriptions[key](this._value);
 		}
 	}
 

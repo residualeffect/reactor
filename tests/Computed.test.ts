@@ -13,53 +13,53 @@ test("Should compute value", () => {
 	const t = new Observable(true);
 	const c = new Computed(() => !t.Value);
 
-	expect(t.Value).toBe(true);
-	expect(c.Value).toBe(false);
+	expect(t.Value).toStrictEqual(true);
+	expect(c.Value).toStrictEqual(false);
 
 	t.Value = false;
 
-	expect(t.Value).toBe(false);
-	expect(c.Value).toBe(true);
+	expect(t.Value).toStrictEqual(false);
+	expect(c.Value).toStrictEqual(true);
 });
 
 test("Should be able to generate static value", () => {
 	const c = new Computed(() => 3);
 
-	expect(c.Value).toBe(3);
+	expect(c.Value).toStrictEqual(3);
 });
 
 test("Should compute value and notify subscribers until they stop observing", () => {
 	const t = new Observable(true);
 	const c = new Computed(() => !t.Value);
 
-	expect(c.ActiveDependencyCount).toBe(0);
+	expect(c.ActiveDependencyCount).toStrictEqual(0);
 
 	const unsubscribe = c.Subscribe(mockObserver);
 
-	expect(c.ActiveDependencyCount).toBe(1);
+	expect(c.ActiveDependencyCount).toStrictEqual(1);
 
-	expect(t.Value).toBe(true);
-	expect(c.Value).toBe(false);
+	expect(t.Value).toStrictEqual(true);
+	expect(c.Value).toStrictEqual(false);
 
 	ThenObserverCallCountIs(mockObserver, 0);
 
 	t.Value = false;
 
-	expect(t.Value).toBe(false);
-	expect(c.Value).toBe(true);
+	expect(t.Value).toStrictEqual(false);
+	expect(c.Value).toStrictEqual(true);
 
-	ThenObserverWasCalled(mockObserver, 1, true, false);
+	ThenObserverWasCalled(mockObserver, 1, true);
 
-	expect(c.ActiveDependencyCount).toBe(1);
+	expect(c.ActiveDependencyCount).toStrictEqual(1);
 
 	unsubscribe();
 
-	expect(c.ActiveDependencyCount).toBe(0);
+	expect(c.ActiveDependencyCount).toStrictEqual(0);
 
 	t.Value = true;
 
-	expect(t.Value).toBe(true);
-	expect(c.Value).toBe(false);
+	expect(t.Value).toStrictEqual(true);
+	expect(c.Value).toStrictEqual(false);
 
 	ThenObserverCallCountIs(mockObserver, 1);
 });
@@ -79,12 +79,12 @@ test("Should re-calculate value when dependency is updated", () => {
 
 	u.Value = 4;
 
-	expect(t.Value).toBe(12);
-	expect(u.Value).toBe(4);
-	expect(c.Value).toBe(48);
-	expect(c.DependencyCount).toBe(2);
+	expect(t.Value).toStrictEqual(12);
+	expect(u.Value).toStrictEqual(4);
+	expect(c.Value).toStrictEqual(48);
+	expect(c.DependencyCount).toStrictEqual(2);
 
-	ThenObserverWasCalled(mockObserver, 1, 48, 36);
+	ThenObserverWasCalled(mockObserver, 1, 48);
 });
 
 test("Should not update twice when using the same dependency twice", () => {
@@ -95,11 +95,11 @@ test("Should not update twice when using the same dependency twice", () => {
 
 	t.Value = 4;
 
-	expect(t.Value).toBe(4);
-	expect(c.Value).toBe(16);
-	expect(c.DependencyCount).toBe(1);
+	expect(t.Value).toStrictEqual(4);
+	expect(c.Value).toStrictEqual(16);
+	expect(c.DependencyCount).toStrictEqual(1);
 
-	ThenObserverWasCalled(mockObserver, 1, 16, 144);
+	ThenObserverWasCalled(mockObserver, 1, 16);
 });
 
 test("Should not re-calculate value when dependency is updated to same value", () => {
@@ -117,9 +117,9 @@ test("Should not re-calculate value when dependency is updated to same value", (
 
 	u.Value = 3;
 
-	expect(t.Value).toBe(12);
-	expect(u.Value).toBe(3);
-	expect(c.Value).toBe(36);
+	expect(t.Value).toStrictEqual(12);
+	expect(u.Value).toStrictEqual(3);
+	expect(c.Value).toStrictEqual(36);
 
 	ThenObserverCallCountIs(mockObserver, 0);
 });
@@ -139,9 +139,9 @@ test("Should not re-calculate value when currently unused dependency is updated"
 
 	u.Value = 4;
 
-	expect(t.Value).toBe(10);
-	expect(u.Value).toBe(4);
-	expect(c.Value).toBe(10);
+	expect(t.Value).toStrictEqual(10);
+	expect(u.Value).toStrictEqual(4);
+	expect(c.Value).toStrictEqual(10);
 
 	ThenObserverCallCountIs(mockObserver, 0);
 });
@@ -157,35 +157,35 @@ test("Should identify when dependency starts being used and re-calculate value w
 		return t.Value;
 	});
 
-	expect(c.DependencyCount).toBe(1);
+	expect(c.DependencyCount).toStrictEqual(1);
 
 	c.Subscribe(mockObserver);
 
 	u.Value = 4;
-	expect(c.DependencyCount).toBe(1);
+	expect(c.DependencyCount).toStrictEqual(1);
 
-	expect(t.Value).toBe(10);
-	expect(u.Value).toBe(4);
-	expect(c.Value).toBe(10);
+	expect(t.Value).toStrictEqual(10);
+	expect(u.Value).toStrictEqual(4);
+	expect(c.Value).toStrictEqual(10);
 
 	ThenObserverCallCountIs(mockObserver, 0);
 
 	t.Value = 12;
-	expect(c.DependencyCount).toBe(2);
+	expect(c.DependencyCount).toStrictEqual(2);
 
-	expect(t.Value).toBe(12);
-	expect(u.Value).toBe(4);
-	expect(c.Value).toBe(48);
+	expect(t.Value).toStrictEqual(12);
+	expect(u.Value).toStrictEqual(4);
+	expect(c.Value).toStrictEqual(48);
 
-	ThenObserverWasCalled(mockObserver, 1, 48, 10);
+	ThenObserverWasCalled(mockObserver, 1, 48);
 
 	u.Value = 5;
 
-	expect(t.Value).toBe(12);
-	expect(u.Value).toBe(5);
-	expect(c.Value).toBe(60);
+	expect(t.Value).toStrictEqual(12);
+	expect(u.Value).toStrictEqual(5);
+	expect(c.Value).toStrictEqual(60);
 
-	ThenObserverWasCalled(mockObserver, 2, 60, 48);
+	ThenObserverWasCalled(mockObserver, 2, 60);
 });
 
 test("Should identify when dependency stops being used and not re-calculate value when it is modified", () => {
@@ -202,28 +202,28 @@ test("Should identify when dependency stops being used and not re-calculate valu
 	c.Subscribe(mockObserver);
 
 	u.Value = 4;
-	expect(c.DependencyCount).toBe(2);
+	expect(c.DependencyCount).toStrictEqual(2);
 
-	expect(t.Value).toBe(12);
-	expect(u.Value).toBe(4);
-	expect(c.Value).toBe(48);
+	expect(t.Value).toStrictEqual(12);
+	expect(u.Value).toStrictEqual(4);
+	expect(c.Value).toStrictEqual(48);
 
-	ThenObserverWasCalled(mockObserver, 1, 48, 36);
+	ThenObserverWasCalled(mockObserver, 1, 48);
 
 	t.Value = 5;
-	expect(c.DependencyCount).toBe(1);
+	expect(c.DependencyCount).toStrictEqual(1);
 
-	expect(t.Value).toBe(5);
-	expect(u.Value).toBe(4);
-	expect(c.Value).toBe(5);
+	expect(t.Value).toStrictEqual(5);
+	expect(u.Value).toStrictEqual(4);
+	expect(c.Value).toStrictEqual(5);
 
-	ThenObserverWasCalled(mockObserver, 2, 5, 48);
+	ThenObserverWasCalled(mockObserver, 2, 5);
 
 	u.Value = 5;
 
-	expect(t.Value).toBe(5);
-	expect(u.Value).toBe(5);
-	expect(c.Value).toBe(5);
+	expect(t.Value).toStrictEqual(5);
+	expect(u.Value).toStrictEqual(5);
+	expect(c.Value).toStrictEqual(5);
 
 	ThenObserverCallCountIs(mockObserver, 2);
 });
@@ -233,30 +233,30 @@ test("Should be able to generate a computed using another computed", () => {
 	const c = new Computed(() => t.Value + 10);
 	const d = new Computed(() => c.Value + 20);
 
-	expect(t.Value).toBe(12);
-	expect(c.Value).toBe(22);
-	expect(d.Value).toBe(42);
+	expect(t.Value).toStrictEqual(12);
+	expect(c.Value).toStrictEqual(22);
+	expect(d.Value).toStrictEqual(42);
 
 	const unsubscribe = d.Subscribe(mockObserver);
 
-	expect(d.DependencyCount).toBe(1);
-	expect(c.DependencyCount).toBe(1);
+	expect(d.DependencyCount).toStrictEqual(1);
+	expect(c.DependencyCount).toStrictEqual(1);
 
 	t.Value = 4;
 
-	expect(t.Value).toBe(4);
-	expect(c.Value).toBe(14);
-	expect(d.Value).toBe(34);
+	expect(t.Value).toStrictEqual(4);
+	expect(c.Value).toStrictEqual(14);
+	expect(d.Value).toStrictEqual(34);
 
-	ThenObserverWasCalled(mockObserver, 1, 34, 42);
+	ThenObserverWasCalled(mockObserver, 1, 34);
 
 	unsubscribe();
 
 	t.Value = 5;
 
-	expect(t.Value).toBe(5);
-	expect(c.Value).toBe(15);
-	expect(d.Value).toBe(35);
+	expect(t.Value).toStrictEqual(5);
+	expect(c.Value).toStrictEqual(15);
+	expect(d.Value).toStrictEqual(35);
 
 	ThenObserverCallCountIs(mockObserver, 1);
 });
@@ -267,7 +267,7 @@ test("Should be able to observe a computed that uses a computed that has no depe
 
 	d.Subscribe(mockObserver);
 
-	expect(d.Value).toBe(false);
+	expect(d.Value).toStrictEqual(false);
 	ThenObserverCallCountIs(mockObserver, 0);
 });
 
@@ -283,7 +283,7 @@ test("Should handle value generators that sometimes throw errors", () => {
 	const c = new Computed(valueGenerator);
 	c.Subscribe(mockObserver);
 
-	expect(c.Value).toBe(3);
+	expect(c.Value).toStrictEqual(3);
 
 	const action = (): void => {
 		shouldFail.Value = true;
@@ -297,7 +297,7 @@ The error was: TEST ERROR MESSAGE`;
 
 	expect(action).toThrow(new Error(expectedErrorMessage));
 
-	expect(IsTracking()).toBe(false);
+	expect(IsTracking()).toStrictEqual(false);
 });
 
 test("Should track large dependency chains", () => {
@@ -314,11 +314,11 @@ test("Should track large dependency chains", () => {
 
 	const lastDependency = dependencyChain[999];
 
-	expect(lastDependency.Value).toBe(499506);
+	expect(lastDependency.Value).toStrictEqual(499506);
 
 	t.Value = 4;
 
-	expect(lastDependency.Value).toBe(499508);
+	expect(lastDependency.Value).toStrictEqual(499508);
 });
 
 test("Should track large sets of dependencies", () => {
@@ -336,11 +336,11 @@ test("Should track large sets of dependencies", () => {
 		return result;
 	});
 
-	expect(c.Value).toBe(499500);
+	expect(c.Value).toStrictEqual(499500);
 
 	manyObservables[0].Value = 50;
 
-	expect(c.Value).toBe(499550);
+	expect(c.Value).toStrictEqual(499550);
 });
 
 test("Should handle large number of subscribers", () => {
@@ -354,6 +354,6 @@ test("Should handle large number of subscribers", () => {
 	t.Value = 4;
 
 	for (let i = 0; i < 1000; i++) {
-		expect(manyComputed[i].Value).toBe(4 + i);
+		expect(manyComputed[i].Value).toStrictEqual(4 + i);
 	}
 });
