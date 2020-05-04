@@ -1,12 +1,12 @@
 {
   "name": "@residualeffect/reactor",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "private": false,
   "author": "ResidualEffect",
   "description": "A lightweight reactive programming library for javascript that includes automatic dependency tracking for computed values.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joshbarger/reactor.git"
+    "url": "https://github.com/residualeffect/reactor.git"
   },
   "license": "MIT",
   "main": "lib/index.js",
