@@ -1,4 +1,4 @@
-import type { Observer, Unsubscribe } from "./BaseObservable";
+import type { Observer, Unsubscribe } from "./Observer";
 
 export interface ReadOnlyObservable<T> {
 	readonly Value: T;

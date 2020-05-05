@@ -1,13 +1,11 @@
 import { ReportUsage } from "./DependencyTracking";
+import type { Observer, Unsubscribe } from "./Observer";
 
 interface Subscriptions<T> {
 	[subscriptionId: number]: Observer<T>;
 }
 
 let observableId = 0;
-
-export type Observer<T> = (newValue: T) => void;
-export type Unsubscribe = () => void;
 
 export class BaseObservable<T> {
 	public constructor(initialValue: T) {

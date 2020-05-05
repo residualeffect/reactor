@@ -1,4 +1,5 @@
-import type { BaseObservable, Unsubscribe } from "./BaseObservable";
+import type { BaseObservable } from "./BaseObservable";
+import type { Unsubscribe } from "./Observer";
 
 export interface Dependency {
 	readonly Observable: BaseObservable<unknown>;

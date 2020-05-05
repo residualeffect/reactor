@@ -1,3 +1,4 @@
+export * from "./Observer";
 export * from "./ReadOnlyObservable";
 export * from "./Observable";
 export * from "./ObservableArray";

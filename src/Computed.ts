@@ -1,5 +1,6 @@
-import { BaseObservable, Unsubscribe, Observer } from "./BaseObservable";
+import { BaseObservable } from "./BaseObservable";
 import { TrackDependencies, DependencyMap, ValueGeneratorError, ReportUsage } from "./DependencyTracking";
+import type { Unsubscribe, Observer } from "./Observer";
 import type { ReadOnlyObservable } from "./ReadOnlyObservable";
 
 export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable<T> {
