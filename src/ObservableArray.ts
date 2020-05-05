@@ -1,6 +1,7 @@
 import { BaseObservable } from "./BaseObservable";
+import type { ReadOnlyObservable } from "./ReadOnlyObservable";
 
-export class ObservableArray<T> extends BaseObservable<T[]> {
+export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyObservable<readonly T[]> {
 	public constructor(initialValue: T[]) {
 		super(initialValue);
 	}
@@ -58,5 +59,9 @@ export class ObservableArray<T> extends BaseObservable<T[]> {
 		const result = this._value.splice(start, deleteCount, ...items);
 		this.NotifyObservers();
 		return result;
+	}
+
+	public AsReadOnly(): ReadOnlyObservable<readonly T[]> {
+		return this;
 	}
 }

@@ -1,6 +1,7 @@
 import { BaseObservable } from "./BaseObservable";
+import type { ReadOnlyObservable } from "./ReadOnlyObservable";
 
-export class Observable<T> extends BaseObservable<T> {
+export class Observable<T> extends BaseObservable<T> implements ReadOnlyObservable<T> {
 	public constructor(initialValue: T) {
 		super(initialValue);
 	}
@@ -15,5 +16,9 @@ export class Observable<T> extends BaseObservable<T> {
 
 	public Update(transform: (oldValue: T) => T): void {
 		this.SetIfChanged(transform(this._value));
+	}
+
+	public AsReadOnly(): ReadOnlyObservable<T> {
+		return this;
 	}
 }

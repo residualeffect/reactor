@@ -7,8 +7,7 @@
 ### Changed
 * Change notifications no longer include the old value
 * RateLimitedObservable has been replaced by the more flexible FilteredObservable (when used with the RateLimiter value filter)
-### Removed
-* Removed ReadOnlyObservable
+* Changed ReadOnlyObservable to be implemented as an interface rather than a base class to improve flexibility of concrete implementation details
 
 ## [1.3.0] - 2020-03-05
 ### Changed

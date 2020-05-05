@@ -1,4 +1,4 @@
-export * from "./BaseObservable";
+export * from "./ReadOnlyObservable";
 export * from "./Observable";
 export * from "./ObservableArray";
 export * from "./ObservableObject";
