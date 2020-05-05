@@ -1,4 +1,5 @@
 import { ObservableArray } from "../src/ObservableArray";
+import { Computed } from "../src/Computed";
 import { ThenObserverWasCalled } from "./TestHelpers";
 
 let mockObserver: jest.Mock;
@@ -92,4 +93,17 @@ test("Should notify observers when value is spliced", () => {
 	const removed = t.splice(1, 1, "Testing");
 	expect(removed).toStrictEqual(["Amazing"]);
 	ThenObserverWasCalled(mockObserver, 1, ["Hello", "Testing", "World"]);
+});
+
+test("Should work with computed observable", () => {
+	const t = new ObservableArray<string>(["Hello", "Amazing", "World"]);
+	const c = new Computed<string>(() => t.Value[0]);
+	c.Subscribe(mockObserver);
+
+	expect(c.Value).toStrictEqual("Hello");
+
+	t.unshift("What");
+	expect(c.Value).toStrictEqual("What");
+
+	ThenObserverWasCalled(mockObserver, 1, "What");
 });

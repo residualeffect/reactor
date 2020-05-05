@@ -23,13 +23,13 @@ import { Observable } from "@residualeffect/reactor";
 const t = new Observable(3);
 
 // Observe changes
-const unsubscribe = t.Subscribe((newValue) => console.log(newValue));
+const unsubscribe = t.Subscribe(observerFunc);
 
 // Change value
 t.Value = 5;
 
 // Get current value
-console.log(t.Value);
+expect(t.Value).toStrictEqual(5);
 
 // Stop observing changes
 unsubscribe();
@@ -46,22 +46,22 @@ import { ObservableArray } from "@residualeffect/reactor";
 const t = new ObservableArray<number>([3]);
 
 // Observe changes
-const unsubscribe = t.Subscribe((newValue) => console.log(newValue));
+const unsubscribe = t.Subscribe(observerFunc);
 
 // Push a new value on to the array
 t.push(5);
 
-// Get current value (t is now [3,5])
-console.log(t.Value);
+// Get current value (it is now [3,5])
+expect(t.Value).toStrictEqual([3, 5]);
 
 // Note that modifying the value is not allowed
-t.Value.push(5); // ERROR !!!
+// t.Value.push(5); // ERROR !!!
 
 // But you can replace the entire array if you want
 t.Value = [6];
 
 // Get current value (t is now [6])
-console.log(t.Value);
+expect(t.Value).toStrictEqual([6]);
 
 // Stop observing changes
 unsubscribe();
@@ -78,22 +78,25 @@ import { ObservableObject } from "@residualeffect/reactor";
 const t = new ObservableObject<SomeType>({ PropertyA: "Hello", PropertyB: "World" });
 
 // Observe changes
-const unsubscribe = t.Subscribe((newValue) => console.log(newValue));
+const unsubscribe = t.Subscribe(observerFunc);
 
 // Get current value (Hello / World)
-console.log(t.Value);
+expect(t.Value).toStrictEqual({ PropertyA: "Hello", PropertyB: "World" });
 
 // Change value
 t.Value = { PropertyA: "Testing", PropertyB: "A Lot" };
 
 // Get new value (Testing / A Lot)
-console.log(t.Value);
+expect(t.Value).toStrictEqual({ PropertyA: "Testing", PropertyB: "A Lot" });
 
 // Note that modifying the value is not allowed
-t.Value.PropertyA = "Tricky"; // ERROR !!!
+// t.Value.PropertyA = "Tricky"; // ERROR !!!
 
 // However, you can apply updates to properties like so
 t.Update(x => { x.PropertyA = "Tricky"; });
+
+// Get new value (Tricky / A Lot)
+expect(t.Value).toStrictEqual({ PropertyA: "Tricky", PropertyB: "A Lot" });
 
 // Stop observing changes
 unsubscribe();
@@ -113,13 +116,16 @@ const t = new Observable(3);
 const c = new Computed(() => t.Value * 2);
 
 // Observe changes to computed
-const unsubscribe = c.Subscribe((newValue) => console.log(newValue));
+const unsubscribe = c.Subscribe(observerFunc);
 
 // Get current computed value (c is 6 now)
-console.log(c.Value);
+expect(c.Value).toStrictEqual(6);
 
 // Update the computed by modifying the observable (c is now 10)
 t.Value = 5;
+
+// Get current computed value (c is 10 now)
+expect(c.Value).toStrictEqual(10);
 
 // Stop observing changes to the computed
 unsubscribe();
@@ -138,29 +144,64 @@ import { FilteredObservable, RateLimiter, RateLimitType } from "@residualeffect/
 const r = new FilteredObservable(3, RateLimiter(RateLimitType.Debounce, 200));
 
 // Observe changes
-const unsubscribe = r.Subscribe((newValue) => console.log(newValue));
+const unsubscribe = r.Subscribe(observerFunc);
 
 // Get current value
-console.log(r.Value);
+expect(r.Value).toStrictEqual(3);
 
 // Update the rate limited value
 r.Value = 5;
 // Current value is still 3
-console.log(r.Value);
+expect(r.Value).toStrictEqual(3);
 // Wait 200ms... value is now 5, and the observer was notified
-console.log(r.Value);
+jest.advanceTimersByTime(200);
+expect(r.Value).toStrictEqual(5);
 
 // Update the rate limited value several times in less than 200ms
 r.Value = 6;
 r.Value = 7;
 // Current value is still 5
-console.log(r.Value);
+expect(r.Value).toStrictEqual(5);
 // Wait 200ms... value is now 7, and the observer was notified once
-console.log(r.Value);
+jest.advanceTimersByTime(200);
+expect(r.Value).toStrictEqual(7);
 
 // Stop observing changes
 unsubscribe();
 ```
+
+## Read-Only Observables
+
+Observables of various types can all be converted in to a ReadOnlyObservable, which provides only read-only access to the observable value and the ability to subscribe, but no other capabilities.  These are helpful when you need to be able to interchangeably use different types of observables for a function call.
+
+```ts
+import { Observable, Computed, ReadOnlyObservable } from "@residualeffect/reactor";
+
+// Create an observable
+const t = new Observable(3);
+
+// Create a computed observable (which depends on observable t)
+const c = new Computed(() => t.Value * 2);
+
+// Make it read-only
+const rt = t.AsReadOnly();
+const rc = c.AsReadOnly();
+
+// ... later on ...
+
+function IsBig(input: ReadOnlyObservable<number>): boolean {
+	return input.Value > 5;
+}
+
+// Transform current value of readonly observable (result false)
+expect(IsBig(rt)).toStrictEqual(false);
+
+// Transform current value of readonly computed (result true)
+expect(IsBig(rc)).toStrictEqual(true);
+```
+
+// Or convert it to a read-only instance that is compatible with other observable types
+const r = t.AsReadOnly(); // r is of type ReadOnlyObservable<number>, which can only get the value or subscribe to changes
 
 # Example Usage with React
 
@@ -170,9 +211,9 @@ To do this, start by implementing a react hook for using observables:
 
 ```ts
 import { useEffect, useState } from "react";
-import type { BaseObservable } from "@residualeffect/reactor";
+import type { ReadOnlyObservable } from "@residualeffect/reactor";
 
-export function useObservable<T>(observable: BaseObservable<T>): T {
+export function useObservable<T>(observable: ReadOnlyObservable<T>): T {
 	const [, triggerReact] = useState({});
 
 	useEffect(() => {

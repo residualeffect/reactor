@@ -1,4 +1,5 @@
 import { ObservableObject } from "../src/ObservableObject";
+import { Computed } from "../src/Computed";
 import { ThenObserverWasCalled, ThenObserverCallCountIs } from "./TestHelpers";
 
 interface NestedObject {
@@ -84,13 +85,15 @@ test("Should not notify observers if condition is not met during UpdateWhen func
 	unsubscribe();
 });
 
-test("Should not notify observers if condition is not met during UpdateWhen func", () => {
-	const t = new ObservableObject<string[]>(["Hello"]);
-	const unsubscribe = t.Subscribe(mockObserver);
+test("Should work with computed observable", () => {
+	const t = new ObservableObject<TestSimpleObject>({ A: "Testing", B: false, C: { A: 3} });
+	const c = new Computed<string>(() => t.Value.A);
+	c.Subscribe(mockObserver);
 
-	t.Update(x => x.push("Test"));
+	expect(c.Value).toStrictEqual("Testing");
 
-	ThenObserverCallCountIs(mockObserver, 1);
+	t.Update(x => { x.A = "What is up"; });
+	expect(c.Value).toStrictEqual("What is up");
 
-	unsubscribe();
+	ThenObserverWasCalled(mockObserver, 1, "What is up");
 });
