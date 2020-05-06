@@ -22,9 +22,11 @@
 ### Changed
 * Computed observables will only subscribe to dependencies when the computed value is being observed by something, to prevent memory leaks
 
-## [1.2.0] - 2020-03-02
+## [1.2.0] - 2020-03-03
 ### Changed
 * Computed observables always track their dependencies and refresh automatically
+
+## [1.1.0] - 2020-03-02
 ### Fixed
 * Improved error handling and provide a better error message when something goes wrong during computed value generation
 
