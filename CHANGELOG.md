@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.0] - 2020-05-06
+### Added
+* Added the ability to get a modifiable copy of an observable array
+
 ## [2.1.0] - 2020-05-05
 ### Added
 * Added the ability to concatenate an array to an ObservableArray
