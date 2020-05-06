@@ -1,6 +1,6 @@
 import { ObservableArray } from "../src/ObservableArray";
 import { Computed } from "../src/Computed";
-import { ThenObserverWasCalled } from "./TestHelpers";
+import { ThenObserverWasCalled, ThenObserverCallCountIs } from "./TestHelpers";
 
 let mockObserver: jest.Mock;
 
@@ -37,11 +37,11 @@ test("Should notify observers when array is cleared", () => {
 });
 
 test("Should notify observers when value is pushed", () => {
-	const t = new ObservableArray<string>([]);
+	const t = new ObservableArray<string>(["Hello"]);
 	t.Subscribe(mockObserver);
 
-	t.push("Hello");
-	ThenObserverWasCalled(mockObserver, 1, ["Hello"]);
+	t.push("World");
+	ThenObserverWasCalled(mockObserver, 1, ["Hello", "World"]);
 });
 
 test("Should notify observers when value is popped", () => {
@@ -63,11 +63,19 @@ test("Should notify observers when value is shifted", () => {
 });
 
 test("Should notify observers when value is unshifted", () => {
-	const t = new ObservableArray<string>([]);
+	const t = new ObservableArray<string>(["Hello"]);
 	t.Subscribe(mockObserver);
 
-	t.unshift("Hello");
-	ThenObserverWasCalled(mockObserver, 1, ["Hello"]);
+	t.unshift("World");
+	ThenObserverWasCalled(mockObserver, 1, ["World", "Hello"]);
+});
+
+test("Should notify observers when an array of values is concatenated", () => {
+	const t = new ObservableArray<string>(["Hello"]);
+	t.Subscribe(mockObserver);
+
+	t.concat(["World", "Hey"]);
+	ThenObserverWasCalled(mockObserver, 1, ["Hello", "World", "Hey"]);
 });
 
 test("Should notify observers when value is reversed", () => {
@@ -93,6 +101,78 @@ test("Should notify observers when value is spliced", () => {
 	const removed = t.splice(1, 1, "Testing");
 	expect(removed).toStrictEqual(["Amazing"]);
 	ThenObserverWasCalled(mockObserver, 1, ["Hello", "Testing", "World"]);
+});
+
+test("Should notify observers when array values are swapped", () => {
+	const t = new ObservableArray<string>(["Hello", "World"]);
+	t.Subscribe(mockObserver);
+
+	t.swap(0, 1);
+	ThenObserverWasCalled(mockObserver, 1, ["World", "Hello"]);
+});
+
+test("Should be able to get a copy of the observable array, and modify it without notifying observers", () => {
+	const t = new ObservableArray<string>(["Hello", "World"]);
+	t.Subscribe(mockObserver);
+
+	const a = t.AsArray();
+	a[0] = "Hah I Modified you!";
+
+	ThenObserverCallCountIs(mockObserver, 0);
+});
+
+test("Should notify observers after changes have been made via Update func", () => {
+	const t = new ObservableArray<string>(["Hello", "World"]);
+	t.Subscribe(mockObserver);
+
+	t.Update(x => { x[0] = "Hey"; });
+
+	ThenObserverWasCalled(mockObserver, 1, ["Hey", "World"]);
+});
+
+test("Should still notify observers even if no changes are made via Update func", () => {
+	const t = new ObservableArray<string>(["Hello", "World"]);
+	t.Subscribe(mockObserver);
+
+	t.Update(() => { /* DOES NOTHING */ });
+
+	ThenObserverWasCalled(mockObserver, 1, ["Hello", "World"]);
+});
+
+test("Should notify observers after changes have been made via UpdateWhen func", () => {
+	const t = new ObservableArray<string>(["Hello", "World"]);
+	t.Subscribe(mockObserver);
+
+	t.UpdateWhen(x => x[0] === "Hello", x => x[0] = "Hey");
+
+	ThenObserverWasCalled(mockObserver, 1, ["Hey", "World"]);
+});
+
+test("Should not notify observers if condition is not met during UpdateWhen func", () => {
+	const t = new ObservableArray<string>(["Hello", "World"]);
+	t.Subscribe(mockObserver);
+
+	t.UpdateWhen(x => x[0] !== "Hello", x => x[0] = "Hey");
+
+	ThenObserverCallCountIs(mockObserver, 0);
+});
+
+test("Should trigger updates to computed observable when accessing length", () => {
+	const t = new ObservableArray<string>(["Hello", "Amazing", "World"]);
+	const c = new Computed<string>(() => { 
+		if (t.length > 3) {
+			return "Yep";
+		}
+		return "Nope";
+	});
+	c.Subscribe(mockObserver);
+
+	expect(c.Value).toStrictEqual("Nope");
+
+	t.push("What");
+	expect(c.Value).toStrictEqual("Yep");
+
+	ThenObserverWasCalled(mockObserver, 1, "Yep");
 });
 
 test("Should work with computed observable", () => {

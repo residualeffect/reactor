@@ -14,12 +14,16 @@ export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyO
 		this.SetIfChanged(newValue as T[]);
 	}
 
+	public get length(): number {
+		return this.Get().length;
+	}
+
 	public clear(): void {
 		this._value = [];
 		this.NotifyObservers();
 	}
 
-	public push(...items: T[]): number {
+	public push(...items: readonly T[]): number {
 		const result = this._value.push(...items);
 		this.NotifyObservers();
 		return result;
@@ -37,28 +41,53 @@ export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyO
 		return result;
 	}
 
-	public unshift(...items: T[]): number {
+	public unshift(...items: readonly T[]): number {
 		const result = this._value.unshift(...items);
 		this.NotifyObservers();
 		return result;
 	}
 
-	public reverse(): T[] {
-		const result = this._value.reverse();
+	public concat(items: readonly T[]): void {
+		this._value.push(...items);
 		this.NotifyObservers();
-		return result;
 	}
 
-	public sort(compareFn?: (a: T, b: T) => number): T[] {
-		const result = this._value.sort(compareFn);
+	public reverse(): void {
+		this._value.reverse();
 		this.NotifyObservers();
-		return result;
 	}
 
-	public splice(start: number, deleteCount: number, ...items: T[]): T[] {
+	public sort(compareFn?: (a: T, b: T) => number): void {
+		this._value.sort(compareFn);
+		this.NotifyObservers();
+	}
+
+	public splice(start: number, deleteCount: number, ...items: readonly T[]): readonly T[] {
 		const result = this._value.splice(start, deleteCount, ...items);
 		this.NotifyObservers();
 		return result;
+	}
+
+	public swap(indexA: number, indexB: number): void {
+		const a = this._value[indexA];
+		this._value[indexA] = this._value[indexB];
+		this._value[indexB] = a;
+		this.NotifyObservers();
+	}
+
+	public Update(transform: (value: T[]) => void): void {
+		transform(this.Value as T[]);
+		this.NotifyObservers();
+	}
+
+	public UpdateWhen(condition: (value: readonly T[]) => boolean, transform: (value: T[]) => void): void {
+		if (condition(this.Value)) {
+			this.Update(transform);
+		}
+	}
+
+	public AsArray(): T[] {
+		return this.Get().slice();
 	}
 
 	public AsReadOnly(): ReadOnlyObservable<readonly T[]> {

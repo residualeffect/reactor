@@ -1,6 +1,15 @@
 # Changelog
 
-## [2.0.0] - 2020-05-03
+## [2.1.0] - 2020-05-05
+### Added
+* Added the ability to concatenate an array to an ObservableArray
+* Added the ability to swap the position of two elements in an ObservableArray
+* Added the ability to apply a custom Update transform to an ObservableArray
+* Added shorthand accessor for checking length of ObservableArray
+### Changed
+* Changed some of the param types on ObservableArray to be readonly, and removed some return values from ObservableArray that generated modifiable array references in to the underlying array
+
+## [2.0.0] - 2020-05-04
 ### Added
 * Added ObservableArray type to make working with arrays easier
 * Added ObservableObject type to make working with complex objects easier
