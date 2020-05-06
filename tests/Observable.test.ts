@@ -111,10 +111,42 @@ test("Should deal with observer being removed multiple times", () => {
 
 	ThenObserverWasCalled(mockObserver, 1, false);
 
+	// Do this several times!
+	unsubscribe();
 	unsubscribe();
 	unsubscribe();
 
 	t.Value = true;
 
 	ThenObserverCallCountIs(mockObserver, 1);
+});
+
+test("Should always detect a change for an observable of an array type when the Value is set, even if it is the same array", () => {
+	const sourceArray = ["Hello", "World"];
+
+	const t = new Observable(sourceArray);
+
+	const unsubscribe = t.Subscribe(mockObserver);
+
+	sourceArray.push("Testing");
+	t.Value = sourceArray;
+
+	ThenObserverWasCalled(mockObserver, 1, ["Hello", "World", "Testing"]);
+
+	unsubscribe();
+});
+
+test("Should always detect a change for an observable of an object type when the Value is set, even if it is the same object", () => {
+	const sourceObject = { test: "HI" };
+
+	const t = new Observable(sourceObject);
+
+	const unsubscribe = t.Subscribe(mockObserver);
+
+	sourceObject.test = "Testing";
+	t.Value = sourceObject;
+
+	ThenObserverWasCalled(mockObserver, 1, { test: "Testing" });
+
+	unsubscribe();
 });

@@ -2,8 +2,8 @@ import { BaseObservable } from "./BaseObservable";
 import type { ReadOnlyObservable } from "./ReadOnlyObservable";
 
 export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyObservable<readonly T[]> {
-	public constructor(initialValue: T[]) {
-		super(initialValue);
+	public constructor(initialValue: readonly T[]) {
+		super(initialValue.slice());
 	}
 
 	public get Value(): readonly T[] {
@@ -11,7 +11,7 @@ export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyO
 	}
 
 	public set Value(newValue: readonly T[]) {
-		this.SetIfChanged(newValue as T[]);
+		this.SetIfChanged(newValue.slice());
 	}
 
 	public get length(): number {

@@ -157,6 +157,29 @@ test("Should not notify observers if condition is not met during UpdateWhen func
 	ThenObserverCallCountIs(mockObserver, 0);
 });
 
+test("Should not allow changes to source array passed in to constructor or Value to modify underlying array", () => {
+	const source = ["Hello", "World"];
+	const t = new ObservableArray<string>(source);
+	t.Subscribe(mockObserver);
+
+	expect(t.Value).toStrictEqual(["Hello", "World"]);
+
+	source.push("What");
+	expect(t.Value).toStrictEqual(["Hello", "World"]);
+
+	ThenObserverCallCountIs(mockObserver, 0);
+
+	const anotherSource = ["Just", "Testing"];
+	t.Value = anotherSource;
+
+	ThenObserverWasCalled(mockObserver, 1, ["Just", "Testing"]);
+
+	anotherSource.push("What");
+	expect(t.Value).toStrictEqual(["Just", "Testing"]);
+
+	ThenObserverCallCountIs(mockObserver, 1);
+});
+
 test("Should trigger updates to computed observable when accessing length", () => {
 	const t = new ObservableArray<string>(["Hello", "Amazing", "World"]);
 	const c = new Computed<string>(() => { 

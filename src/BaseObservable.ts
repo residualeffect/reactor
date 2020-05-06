@@ -46,7 +46,7 @@ export class BaseObservable<T> {
 	}
 
 	protected SetIfChanged(newValue: T): void {
-		if (newValue == this._value) {
+		if (typeof newValue !== "object" && newValue == this._value) {
 			return;
 		}
 
