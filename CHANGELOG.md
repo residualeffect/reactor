@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.3.0] - 2020-05-06
+### Fixed
+* ObservableArray now clones the array object when setting the value (rather than using the reference passed in, which the owner could still modify outside of the ObservableArray)
+* An observable of an object or array type will now always notify observers when the Value is assigned (regardless of whether or not there have been any changes)
+  * Consider using ObservableArray or ObservableObject instead
+
 ## [2.2.0] - 2020-05-06
 ### Added
 * Added the ability to get a modifiable copy of an observable array
