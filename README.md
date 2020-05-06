@@ -2,6 +2,8 @@
 
 A lightweight reactive programming library for javascript that includes automatic dependency tracking for computed values.
 
+![Node.js CI](https://github.com/residualeffect/reactor/workflows/Node.js%20CI/badge.svg?branch=master)
+
 [Changelog](CHANGELOG.md)
 
 # Installation
