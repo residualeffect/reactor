@@ -87,11 +87,11 @@ test("Should notify observers when value is reversed", () => {
 });
 
 test("Should notify observers when value is sorted", () => {
-	const t = new ObservableArray<string>(["Hello", "World"]);
+	const t = new ObservableArray<string>(["World", "Hello"]);
 	t.Subscribe(mockObserver);
 
-	t.sort(() => -1);
-	ThenObserverWasCalled(mockObserver, 1, ["World", "Hello"]);
+	t.sort((a, b) => a.localeCompare(b));
+	ThenObserverWasCalled(mockObserver, 1, ["Hello", "World"]);
 });
 
 test("Should notify observers when value is spliced", () => {
