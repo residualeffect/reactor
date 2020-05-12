@@ -75,6 +75,17 @@ export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyO
 		this.NotifyObservers();
 	}
 
+	public remove(item: T): boolean {
+		const indexOfItem = this._value.indexOf(item);
+
+		if (indexOfItem === -1) {
+			return false;
+		}
+
+		this.splice(this._value.indexOf(item), 1);
+		return true;
+	}
+
 	public Update(transform: (value: T[]) => void): void {
 		transform(this.Value as T[]);
 		this.NotifyObservers();
