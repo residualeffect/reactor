@@ -6,7 +6,7 @@ export enum RateLimitType {
 }
 
 export function RateLimiter<T>(type: RateLimitType, delay: number): ValueFilter<T> {
-	let timeoutId: NodeJS.Timeout|undefined = undefined;
+	let timeoutId: ReturnType<typeof setTimeout>|undefined = undefined;
 	let pendingValue: T;
 
 	return (newValue: T, setValue: (newValue: T) => void): void => {
