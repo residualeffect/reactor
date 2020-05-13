@@ -82,7 +82,7 @@ export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyO
 			return false;
 		}
 
-		this.splice(this._value.indexOf(item), 1);
+		this.splice(indexOfItem, 1);
 		return true;
 	}
 
