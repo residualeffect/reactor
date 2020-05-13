@@ -103,6 +103,24 @@ test("Should notify observers when value is spliced", () => {
 	ThenObserverWasCalled(mockObserver, 1, ["Hello", "Testing", "World"]);
 });
 
+test("Should remove item from array when called", () => {
+	const t = new ObservableArray<string>(["Hello", "Amazing", "World"]);
+	t.Subscribe(mockObserver);
+
+	const wasRemoved = t.remove("Amazing");
+	expect(wasRemoved).toStrictEqual(true);
+	ThenObserverWasCalled(mockObserver, 1, ["Hello", "World"]);
+});
+
+test("Should not remove item from array when called with value not present in array", () => {
+	const t = new ObservableArray<string>(["Hello", "Amazing", "World"]);
+	t.Subscribe(mockObserver);
+
+	const wasRemoved = t.remove("Something Not In Array");
+	expect(wasRemoved).toStrictEqual(false);
+	ThenObserverCallCountIs(mockObserver, 0);
+});
+
 test("Should notify observers when array values are swapped", () => {
 	const t = new ObservableArray<string>(["Hello", "World"]);
 	t.Subscribe(mockObserver);
@@ -182,7 +200,7 @@ test("Should not allow changes to source array passed in to constructor or Value
 
 test("Should trigger updates to computed observable when accessing length", () => {
 	const t = new ObservableArray<string>(["Hello", "Amazing", "World"]);
-	const c = new Computed<string>(() => { 
+	const c = new Computed<string>(() => {
 		if (t.length > 3) {
 			return "Yep";
 		}
