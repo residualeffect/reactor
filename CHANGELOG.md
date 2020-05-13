@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.4.0] - 2020-05-12
+### Added
+* Added the ability to directly remove an item from an ObservableArray
+* Starting to add JSDoc descriptions to public functions
+
 ## [2.3.0] - 2020-05-06
 ### Fixed
 * ObservableArray now clones the array object when setting the value (rather than using the reference passed in, which the owner could still modify outside of the ObservableArray)
