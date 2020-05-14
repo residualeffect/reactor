@@ -212,16 +212,12 @@ This library works well with react hooks (available starting with React 16.8), a
 To do this, start by implementing a react hook for using observables, or also add one for generating temporary computed values so that your component only renders when the overall computed value changes):
 
 ```ts
-import { useLayoutEffect, useState } from "react";
+import { useReducer, useLayoutEffect, useState } from "react";
 import type { Computed, ReadOnlyObservable } from "@residualeffect/reactor";
 
 export function useObservable<T>(observable: ReadOnlyObservable<T>): T {
-	const [, triggerReact] = useState({});
-
-	useLayoutEffect(() => {
-		return observable.Subscribe(() => triggerReact({}));
-	}, [observable]);
-
+	const [, triggerReact] = useReducer((x) => x + 1, 0);
+	useLayoutEffect(() => observable.Subscribe(triggerReact), [observable]);
 	return observable.Value;
 }
 
