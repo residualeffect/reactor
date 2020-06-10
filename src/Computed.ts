@@ -85,6 +85,7 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 			} else if (e instanceof Error) {
 				throw new ValueGeneratorError(this._valueGenerator, undefined, e.message);
 			} else {
+				// This shouldn't happen, but typescript doesn't understand
 				throw new ValueGeneratorError(this._valueGenerator, undefined, e);
 			}
 		}

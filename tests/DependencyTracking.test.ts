@@ -10,6 +10,49 @@ beforeEach(() => {
 
 test("Should handle value generators that sometimes throw string errors", () => {
 	const shouldFail = new Observable(false);
+	const badValueGenerator = (): number => {
+		if (shouldFail.Value) {
+			throw new Error("Something bad happened");
+		}
+		return 5;
+	};
+	const x = new Computed(badValueGenerator);
+
+	const goodValueGenerator = (): number => {
+		if (shouldFail.Value) {
+			return x.Value;
+		}
+		return 2;
+	};
+	const c = new Computed(goodValueGenerator);
+
+	c.Subscribe(mockObserver);
+
+	const action = (): void => {
+		shouldFail.Value = true;
+	};
+
+	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
+
+${goodValueGenerator.toString()}
+
+Nested Value Generator (depth 1):
+
+${badValueGenerator.toString()}
+
+Nested error (depth 1): Something bad happened`;
+
+	expect(action).toThrow(new Error(expectedErrorMessage));
+
+	expect(IsTracking()).toStrictEqual(false);
+
+	expect(shouldFail.Value).toStrictEqual(true);
+
+	expect(c.Value).toStrictEqual(2);
+});
+
+test("Should handle value generators that sometimes throw string errors", () => {
+	const shouldFail = new Observable(false);
 	const valueGenerator = (): number => {
 		if (shouldFail.Value) {
 			throw "STRING ERROR MESSAGE";
