@@ -86,6 +86,14 @@ export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyO
 		return true;
 	}
 
+	public toggle(item: T): boolean {
+		if (!this.remove(item)) {
+			this.push(item);
+			return true;
+		}
+		return false;
+	}
+
 	public Update(transform: (value: T[]) => void): void {
 		transform(this.Value as T[]);
 		this.NotifyObservers();

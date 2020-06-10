@@ -1,5 +1,5 @@
 import { FilteredObservable } from "../src/FilteredObservable";
-import { ThenObserverCallCountIs } from "./TestHelpers";
+import { ThenObserverCallCountIs, ThenObserverWasCalled } from "./TestHelpers";
 
 let mockObserver: jest.Mock;
 
@@ -28,4 +28,15 @@ test("Should not notify subscribers when value doesn't change", () => {
 	t.Value = "Testing";
 
 	ThenObserverCallCountIs(mockObserver, 0);
+});
+
+test("Should notify observers on change, even if value is roughly equivalent", () => {
+	const t = new FilteredObservable<number|boolean>(true, (x, s) => s(x));
+	t.Subscribe(mockObserver);
+
+	t.Value = 1;
+	ThenObserverWasCalled(mockObserver, 1, 1);
+
+	t.Value = true;
+	ThenObserverWasCalled(mockObserver, 2, true);
 });

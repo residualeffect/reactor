@@ -85,7 +85,7 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 			} else if (e instanceof Error) {
 				throw new ValueGeneratorError(this._valueGenerator, undefined, e.message);
 			} else {
-				throw new ValueGeneratorError(this._valueGenerator, undefined, e+"");
+				throw new ValueGeneratorError(this._valueGenerator, undefined, e);
 			}
 		}
 	};

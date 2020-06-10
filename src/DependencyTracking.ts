@@ -7,8 +7,8 @@ export interface Dependency {
 }
 
 export class ValueGeneratorError extends Error {
-	public constructor(valueGenerator: Function, innerValueGeneratorError?: ValueGeneratorError, errorMessage?: string) {
-		let message = `An error occurred while generating a computed value.  Value Generator:\n\n${valueGenerator}`;
+	public constructor(valueGenerator: () => unknown, innerValueGeneratorError?: ValueGeneratorError, errorMessage?: string) {
+		let message = `An error occurred while generating a computed value.  Value Generator:\n\n${valueGenerator.toString()}`;
 		if (innerValueGeneratorError) {
 			message += innerValueGeneratorError.InnerMessage(1);
 		}
@@ -19,13 +19,13 @@ export class ValueGeneratorError extends Error {
 		super(message);
 
 		this.name = "ValueGeneratorError";
-		this.ValueGeneratorFailureReason = errorMessage;
 		this.ValueGenerator = valueGenerator;
+		this.ValueGeneratorFailureReason = errorMessage;
 		this.InnerValueGeneratorError = innerValueGeneratorError;
 	}
 
 	public InnerMessage(depth: number): string {
-		let message = `\n\nNested Value Generator (depth ${depth}):\n\n${this.ValueGenerator}`; 
+		let message = `\n\nNested Value Generator (depth ${depth}):\n\n${this.ValueGenerator.toString()}`;
 		if (this.ValueGeneratorFailureReason) {
 			message += `\n\nNested error (depth ${depth}): ${this.ValueGeneratorFailureReason}`;
 		}
@@ -35,8 +35,8 @@ export class ValueGeneratorError extends Error {
 		return message;
 	}
 
-	public ValueGeneratorFailureReason: string|undefined;
-	public ValueGenerator: Function;
+	public ValueGenerator: () => unknown;
+	public ValueGeneratorFailureReason?: string;
 	public InnerValueGeneratorError?: ValueGeneratorError;
 }
 
@@ -69,7 +69,7 @@ function FinishTracking(): DependencyMap {
 
 export function TrackDependencies<T>(valueGenerator: () => T): [T, DependencyMap] {
 	let value!: T;
-	let error: Error|undefined;
+	let error: Error | undefined;
 
 	StartTracking();
 
@@ -77,7 +77,11 @@ export function TrackDependencies<T>(valueGenerator: () => T): [T, DependencyMap
 		value = valueGenerator();
 	}
 	catch (e) {
-		error = e;
+		if (e instanceof Error) {
+			error = e;
+		} else {
+			error = new Error(e);
+		}
 	}
 
 	const dependencies = FinishTracking();

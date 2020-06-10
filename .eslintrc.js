@@ -13,6 +13,7 @@ module.exports = {
 	],
 	rules: {
 		"@typescript-eslint/interface-name-prefix": "off",
+		"@typescript-eslint/ban-types": "off",
 		"semi": ["error", "always"],
 		"eol-last": ["error", "always"],
 		"lines-between-class-members": ["error", "always", {exceptAfterSingleLine: true}],

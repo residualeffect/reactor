@@ -100,6 +100,17 @@ test("Should not notify subscribers when value doesn't change", () => {
 	ThenObserverCallCountIs(mockObserver, 0);
 });
 
+test("Should notify observers on change, even if value is roughly equivalent", () => {
+	const t = new Observable<number|boolean>(true);
+	t.Subscribe(mockObserver);
+
+	t.Value = 1;
+	ThenObserverWasCalled(mockObserver, 1, 1);
+
+	t.Value = true;
+	ThenObserverWasCalled(mockObserver, 2, true);
+});
+
 test("Should deal with observer being removed multiple times", () => {
 	const t = new Observable(true);
 

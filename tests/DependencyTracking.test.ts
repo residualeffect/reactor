@@ -25,9 +25,67 @@ test("Should handle value generators that sometimes throw string errors", () => 
 
 	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
 
-${valueGenerator}
+${valueGenerator.toString()}
 
 The error was: STRING ERROR MESSAGE`;
+
+	expect(action).toThrow(new Error(expectedErrorMessage));
+
+	expect(IsTracking()).toStrictEqual(false);
+
+	expect(shouldFail.Value).toStrictEqual(true);
+
+	expect(c.Value).toStrictEqual(3);
+});
+
+test("Should handle value generators that sometimes throw null errors", () => {
+	const shouldFail = new Observable(false);
+	const valueGenerator = (): number => {
+		if (shouldFail.Value) {
+			throw null;
+		}
+		return 3;
+	};
+	const c = new Computed(valueGenerator);
+	c.Subscribe(mockObserver);
+
+	const action = (): void => {
+		shouldFail.Value = true;
+	};
+
+	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
+
+${valueGenerator.toString()}
+
+The error was: null`;
+
+	expect(action).toThrow(new Error(expectedErrorMessage));
+
+	expect(IsTracking()).toStrictEqual(false);
+
+	expect(shouldFail.Value).toStrictEqual(true);
+
+	expect(c.Value).toStrictEqual(3);
+});
+
+test("Should handle value generators that sometimes throw undefined errors", () => {
+	const shouldFail = new Observable(false);
+	const valueGenerator = (): number => {
+		if (shouldFail.Value) {
+			throw undefined;
+		}
+		return 3;
+	};
+	const c = new Computed(valueGenerator);
+	c.Subscribe(mockObserver);
+
+	const action = (): void => {
+		shouldFail.Value = true;
+	};
+
+	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
+
+${valueGenerator.toString()}`;
 
 	expect(action).toThrow(new Error(expectedErrorMessage));
 
@@ -57,7 +115,7 @@ test("Should detect computed value generators that depend on themselves", () => 
 
 	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
 
-${valueGenerator}
+${valueGenerator.toString()}
 
 The error was: Circular dependency detected!`;
 
@@ -84,7 +142,7 @@ test("Should detect computed value generators that depend on themselves, even wh
 
 	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
 
-${valueGenerator}
+${valueGenerator.toString()}
 
 The error was: Circular dependency detected!`;
 
@@ -115,11 +173,11 @@ test("Should detect computed value generators that indirectly depend on themselv
 
 	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
 
-${innerValueGenerator}
+${innerValueGenerator.toString()}
 
 Nested Value Generator (depth 1):
 
-${outerValueGenerator}
+${outerValueGenerator.toString()}
 
 Nested error (depth 1): Circular dependency detected!`;
 
@@ -143,7 +201,7 @@ test("Should detect circular dependencies for value generates that modify depend
 
 	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
 
-${valueGenerator}
+${valueGenerator.toString()}
 
 The error was: Circular dependency detected!`;
 
