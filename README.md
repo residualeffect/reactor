@@ -213,7 +213,7 @@ To do this, start by implementing a react hook for using observables, or also ad
 
 ```ts
 import { useReducer, useLayoutEffect, useState } from "react";
-import type { Computed, ReadOnlyObservable } from "@residualeffect/reactor";
+import { Computed, ReadOnlyObservable } from "@residualeffect/reactor";
 
 export function useObservable<T>(observable: ReadOnlyObservable<T>): T {
 	const [, triggerReact] = useReducer((x) => x + 1, 0);
