@@ -8,7 +8,7 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		super(undefined!);
 
-		this._valueGenerator = valueGenerator;
+		this.ValueGenerator = valueGenerator;
 
 		this._isRefreshing = false;
 		this._isListening = false;
@@ -70,7 +70,7 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 		try {
 			this._isRefreshing = true;
 
-			const [value, dependencies] = TrackDependencies(this._valueGenerator);
+			const [value, dependencies] = TrackDependencies(this.ValueGenerator);
 			this.SetIfChanged(value);
 
 			this._isRefreshing = false;
@@ -81,12 +81,12 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 			this._isRefreshing = false;
 
 			if (e instanceof ValueGeneratorError) {
-				throw new ValueGeneratorError(this._valueGenerator, e);
+				throw new ValueGeneratorError(this.ValueGenerator, e);
 			} else if (e instanceof Error) {
-				throw new ValueGeneratorError(this._valueGenerator, undefined, e.message);
+				throw new ValueGeneratorError(this.ValueGenerator, undefined, e.message);
 			} else {
 				// This shouldn't happen, but typescript doesn't understand
-				throw new ValueGeneratorError(this._valueGenerator, undefined, e);
+				throw new ValueGeneratorError(this.ValueGenerator, undefined, e);
 			}
 		}
 	};
@@ -145,7 +145,7 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 		}
 	}
 
-	private readonly _valueGenerator: () => T;
+	public readonly ValueGenerator: () => T;
 
 	private _isRefreshing: boolean;
 	private _isListening: boolean;

@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.5.1] - 2020-07-27
+### Added
+* Exposed Computed ValueGenerator as a public readonly property
+### Changed
+* Improved example usage with react hooks readme
+
 ## [2.5.0] - 2020-06-09
 ### Added
 * ObservableArray now has the ability to "toggle" an item (remove if present, else add)
