@@ -1,6 +1,6 @@
 {
   "name": "@residualeffect/reactor",
-  "version": "2.3.0",
+  "version": "2.5.1",
   "private": false,
   "author": "ResidualEffect",
   "description": "A lightweight reactive programming library for javascript that includes automatic dependency tracking for computed values.",
@@ -21,17 +21,16 @@
     "watch": "tsc --watch"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.1",
-    "@typescript-eslint/eslint-plugin": "^2.30.0",
-    "@typescript-eslint/parser": "^2.30.0",
-    "eslint": "^6.8.0",
-    "jest": "^25.5.4",
+    "@types/jest": "^26.0.20",
+    "@typescript-eslint/eslint-plugin": "^4.15.0",
+    "@typescript-eslint/parser": "^4.15.0",
+    "eslint": "^7.19.0",
+    "jest": "^26.6.3",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "ts-jest": "^25.4.0",
-    "typescript": "^3.8.3"
+    "ts-jest": "^26.5.1",
+    "typescript": "^4.1.5"
   },
-  "dependencies": {},
   "sideEffects": false,
   "files": [
     "lib/"

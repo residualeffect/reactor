@@ -129,6 +129,24 @@ test("Should notify observers when array values are swapped", () => {
 	ThenObserverWasCalled(mockObserver, 1, ["World", "Hello"]);
 });
 
+test("Should notify observers when array values is toggled on", () => {
+	const t = new ObservableArray<string>(["Hello"]);
+	t.Subscribe(mockObserver);
+
+	const wasAdded = t.toggle("World");
+	expect(wasAdded).toStrictEqual(true);
+	ThenObserverWasCalled(mockObserver, 1, ["Hello", "World"]);
+});
+
+test("Should notify observers when array values is toggled off", () => {
+	const t = new ObservableArray<string>(["Hello", "World"]);
+	t.Subscribe(mockObserver);
+
+	const wasAdded = t.toggle("Hello");
+	expect(wasAdded).toStrictEqual(false);
+	ThenObserverWasCalled(mockObserver, 1, ["World"]);
+});
+
 test("Should be able to get a copy of the observable array, and modify it without notifying observers", () => {
 	const t = new ObservableArray<string>(["Hello", "World"]);
 	t.Subscribe(mockObserver);

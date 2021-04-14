@@ -291,7 +291,7 @@ test("Should handle value generators that sometimes throw errors", () => {
 
 	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
 
-${valueGenerator}
+${valueGenerator.toString()}
 
 The error was: TEST ERROR MESSAGE`;
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.5.1] - 2020-07-27
+### Added
+* Exposed Computed ValueGenerator as a public readonly property
+### Changed
+* Improved example usage with react hooks readme
+
+## [2.5.0] - 2020-06-09
+### Added
+* ObservableArray now has the ability to "toggle" an item (remove if present, else add)
+### Fixed
+* Observables will now notify even when the value is set to something "roughly" equivalent (for example, when an observable value is changed from `true` to `1`)
+
+## [2.4.0] - 2020-05-12
+### Added
+* Added the ability to directly remove an item from an ObservableArray
+* Starting to add JSDoc descriptions to public functions
+
 ## [2.3.0] - 2020-05-06
 ### Fixed
 * ObservableArray now clones the array object when setting the value (rather than using the reference passed in, which the owner could still modify outside of the ObservableArray)

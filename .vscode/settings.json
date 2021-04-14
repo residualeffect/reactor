@@ -1,26 +1,27 @@
 {
-	"files.exclude": {
-		"node_modules": true,
-	},
+	"cSpell.words": [
+		"residualeffect"
+	],
 	"eslint.validate": [
 		"javascript",
 		"javascriptreact",
 		"typescript",
-		"typescriptreact",
+		"typescriptreact"
 	],
 	"eslint.format.enable": true,
+	"editor.insertSpaces": false,
+	"editor.renderWhitespace": "boundary",
+	"files.exclude": {
+		"node_modules": true
+	},
+	"typescript.enablePromptUseWorkspaceTsdk": true,
+	"typescript.tsdk": "node_modules/typescript/lib",
 	"[typescript]": {
 		"editor.formatOnSave": true
 	},
-	"editor.renderWhitespace": "boundary",
-	"editor.insertSpaces": false,
-	"typescript.tsdk": "node_modules/typescript/lib",
 	"search.exclude": {
 		"node_modules": true,
 		".output": true,
-		"lib": true,
-	},
-	"cSpell.words": [
-		"residualeffect"
-	],
+		"lib": true
+	}
 }
