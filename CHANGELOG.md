@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.0.0] - 2021-04-14
+### Changed
+* Changed behavior of ObservableArray.remove(x) such that it will remove all matching elements instead of just the first match (this also affects ObservableArray.toggle(x));
+
 ## [2.5.1] - 2020-07-27
 ### Added
 * Exposed Computed ValueGenerator as a public readonly property
