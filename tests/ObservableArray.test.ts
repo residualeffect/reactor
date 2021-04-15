@@ -112,6 +112,15 @@ test("Should remove item from array when called", () => {
 	ThenObserverWasCalled(mockObserver, 1, ["Hello", "World"]);
 });
 
+test("Should remove multiple items from array when called", () => {
+	const t = new ObservableArray<string>(["Hello", "Amazing", "World", "Amazing"]);
+	t.Subscribe(mockObserver);
+
+	const wasRemoved = t.remove("Amazing");
+	expect(wasRemoved).toStrictEqual(true);
+	ThenObserverWasCalled(mockObserver, 1, ["Hello", "World"]);
+});
+
 test("Should not remove item from array when called with value not present in array", () => {
 	const t = new ObservableArray<string>(["Hello", "Amazing", "World"]);
 	t.Subscribe(mockObserver);
@@ -140,6 +149,15 @@ test("Should notify observers when array values is toggled on", () => {
 
 test("Should notify observers when array values is toggled off", () => {
 	const t = new ObservableArray<string>(["Hello", "World"]);
+	t.Subscribe(mockObserver);
+
+	const wasAdded = t.toggle("Hello");
+	expect(wasAdded).toStrictEqual(false);
+	ThenObserverWasCalled(mockObserver, 1, ["World"]);
+});
+
+test("Should remove multiple items when toggling item in array", () => {
+	const t = new ObservableArray<string>(["Hello", "World", "Hello"]);
 	t.Subscribe(mockObserver);
 
 	const wasAdded = t.toggle("Hello");

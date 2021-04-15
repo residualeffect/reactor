@@ -76,14 +76,15 @@ export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyO
 	}
 
 	public remove(item: T): boolean {
-		const indexOfItem = this._value.indexOf(item);
+		const oldArray = this._value;
+		const newArray = oldArray.filter((i) => i !== item);
 
-		if (indexOfItem === -1) {
+		if (oldArray.length !== newArray.length) {
+			this.Value = newArray;
+			return true;
+		} else {
 			return false;
 		}
-
-		this.splice(indexOfItem, 1);
-		return true;
 	}
 
 	public toggle(item: T): boolean {
