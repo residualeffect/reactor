@@ -80,7 +80,8 @@ export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyO
 		const newArray = oldArray.filter((i) => i !== item);
 
 		if (oldArray.length !== newArray.length) {
-			this.Value = newArray;
+			this._value = newArray;
+			this.NotifyObservers();
 			return true;
 		} else {
 			return false;
