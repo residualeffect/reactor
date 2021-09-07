@@ -76,11 +76,11 @@ export function TrackDependencies<T>(valueGenerator: () => T): [T, DependencyMap
 	try {
 		value = valueGenerator();
 	}
-	catch (e) {
+	catch (e: unknown) {
 		if (e instanceof Error) {
 			error = e;
 		} else {
-			error = new Error(e);
+			error = new Error(e as string);
 		}
 	}
 

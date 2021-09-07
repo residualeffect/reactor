@@ -77,7 +77,7 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 
 			this.UpdateDependencies(dependencies);
 		}
-		catch (e) {
+		catch (e: unknown) {
 			this._isRefreshing = false;
 
 			if (e instanceof ValueGeneratorError) {
@@ -86,7 +86,7 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 				throw new ValueGeneratorError(this.ValueGenerator, undefined, e.message);
 			} else {
 				// This shouldn't happen, but typescript doesn't understand
-				throw new ValueGeneratorError(this.ValueGenerator, undefined, e);
+				throw new ValueGeneratorError(this.ValueGenerator, undefined, e as string);
 			}
 		}
 	};
