@@ -337,10 +337,31 @@ test("Should track large sets of dependencies", () => {
 	});
 
 	expect(c.Value).toStrictEqual(499500);
+	expect(c.DependencyCount).toStrictEqual(1000);
 
 	manyObservables[0].Value = 50;
 
 	expect(c.Value).toStrictEqual(499550);
+	expect(c.DependencyCount).toStrictEqual(1000);
+});
+
+test("Should handle same dependency many times", () => {
+	const t = new Observable(3);
+
+	const myComputed: Computed<number> = new Computed(() => {
+		let result = 0;
+		for (let i = 0; i < 1000; i++) {
+			result += t.Value;
+		}
+		return result;
+	});
+
+	expect(myComputed.Value).toStrictEqual(3000);
+	expect(myComputed.DependencyCount).toStrictEqual(1);
+
+	t.Value = 4;
+	expect(myComputed.Value).toStrictEqual(4000);
+	expect(myComputed.DependencyCount).toStrictEqual(1);
 });
 
 test("Should handle large number of subscribers", () => {
