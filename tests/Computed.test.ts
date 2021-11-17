@@ -378,3 +378,10 @@ test("Should handle large number of subscribers", () => {
 		expect(manyComputed[i].Value).toStrictEqual(4 + i);
 	}
 });
+
+test("Should be usable as a ReadOnlyObservable", () => {
+	const t = new Observable(true);
+	const c = new Computed(() => !t.Value);
+	const ro = c.AsReadOnly();
+	expect(ro.Value).toStrictEqual(false);
+});
