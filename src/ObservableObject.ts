@@ -1,10 +1,10 @@
-import { BaseObservable } from "./BaseObservable";
+import { BaseObservable, EqualityComparison } from "./BaseObservable";
 import type { Immutable } from "./Immutable";
 import type { ReadOnlyObservable } from "./ReadOnlyObservable";
 
 export class ObservableObject<T extends object> extends BaseObservable<Immutable<T>> implements ReadOnlyObservable<Immutable<T>> {
-	public constructor(initialValue: Immutable<T>) {
-		super(initialValue);
+	public constructor(initialValue: Immutable<T>, onChangeEqualityComparison?: EqualityComparison<Immutable<T>>) {
+		super(initialValue, onChangeEqualityComparison);
 	}
 
 	public get Value(): Immutable<T> {

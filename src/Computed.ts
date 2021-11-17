@@ -1,12 +1,12 @@
-import { BaseObservable } from "./BaseObservable";
+import { BaseObservable, EqualityComparison } from "./BaseObservable";
 import { TrackDependencies, DependencyMap, ValueGeneratorError, ReportUsage } from "./DependencyTracking";
 import type { Unsubscribe, Observer } from "./Observer";
 import type { ReadOnlyObservable } from "./ReadOnlyObservable";
 
 export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable<T> {
-	public constructor(valueGenerator: () => T) {
+	public constructor(valueGenerator: () => T, onChangeEqualityComparison?: EqualityComparison<T>) {
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		super(undefined!);
+		super(undefined!, onChangeEqualityComparison);
 
 		this.ValueGenerator = valueGenerator;
 
@@ -49,12 +49,12 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 	}
 
 	public Subscribe(observer: Observer<T>): Unsubscribe {
+		this.PreUpdateListeningStatusForSubscription();
 		const unsubscribe = super.Subscribe(observer);
-		this.UpdateListeningStatus();
 
 		return (): void => {
 			unsubscribe();
-			this.UpdateListeningStatus();
+			this.UpdateListeningStatusForUnsubscribe();
 		};
 	}
 
@@ -72,10 +72,9 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 
 			const [value, dependencies] = TrackDependencies(this.ValueGenerator);
 			this.SetIfChanged(value);
+			this.UpdateDependencies(dependencies);
 
 			this._isRefreshing = false;
-
-			this.UpdateDependencies(dependencies);
 		}
 		catch (e: unknown) {
 			this._isRefreshing = false;
@@ -91,11 +90,15 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 		}
 	};
 
-	private UpdateListeningStatus(): void {
-		if (this.SubscriptionCount === 1) {
+	private PreUpdateListeningStatusForSubscription(): void {
+		if (this.SubscriptionCount === 0 && !this._isListening) {
 			this._isListening = true;
 			this.RefreshValue();
-		} else if (this.SubscriptionCount === 0) {
+		}
+	}
+
+	private UpdateListeningStatusForUnsubscribe(): void {
+		if (this.SubscriptionCount === 0) {
 			this.StopListening();
 		}
 	}

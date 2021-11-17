@@ -159,5 +159,25 @@ test("Should always detect a change for an observable of an object type when the
 
 	ThenObserverWasCalled(mockObserver, 1, { test: "Testing" });
 
+	t.Value = { test: "Testing" };
+
+	ThenObserverWasCalled(mockObserver, 2, { test: "Testing" });
+
+	unsubscribe();
+});
+
+test("Should be able to use a custom onChangeEqualityComparison to specifically detect if a change was actually made when the Value is set", () => {
+	const t = new Observable({ test: "HI" }, (a, b) => a.test === b.test);
+
+	const unsubscribe = t.Subscribe(mockObserver);
+
+	t.Value = { test: "Testing" };
+
+	ThenObserverWasCalled(mockObserver, 1, { test: "Testing" });
+
+	t.Value = { test: "Testing" };
+
+	ThenObserverCallCountIs(mockObserver, 1);
+
 	unsubscribe();
 });

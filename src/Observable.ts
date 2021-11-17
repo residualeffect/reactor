@@ -1,4 +1,4 @@
-import { BaseObservable } from "./BaseObservable";
+import { BaseObservable, EqualityComparison } from "./BaseObservable";
 import type { ReadOnlyObservable } from "./ReadOnlyObservable";
 
 export class Observable<T> extends BaseObservable<T> implements ReadOnlyObservable<T> {
@@ -6,8 +6,8 @@ export class Observable<T> extends BaseObservable<T> implements ReadOnlyObservab
 	 * Create a new observable.
 	 * @param initialValue The initial value of this new observable.
 	 */
-	public constructor(initialValue: T) {
-		super(initialValue);
+	public constructor(initialValue: T, onChangeEqualityComparison?: EqualityComparison<T>) {
+		super(initialValue, onChangeEqualityComparison);
 	}
 
 	/**

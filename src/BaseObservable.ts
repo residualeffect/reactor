@@ -7,8 +7,10 @@ interface Subscriptions<T> {
 
 let observableId = 0;
 
+export type EqualityComparison<T> = (newValue: T, oldValue: T) => boolean;
+
 export class BaseObservable<T> {
-	public constructor(initialValue: T) {
+	public constructor(initialValue: T, onChangeEqualityComparison?: EqualityComparison<T>) {
 		this._observableId = observableId++;
 
 		this._value = initialValue;
@@ -16,6 +18,9 @@ export class BaseObservable<T> {
 		this._nextSubscriptionId = 0;
 		this._subscriptionCount = 0;
 		this._subscriptions = {};
+		if (onChangeEqualityComparison !== undefined) {
+			this._equalityComparison = onChangeEqualityComparison;
+		}
 	}
 
 	public Subscribe(observer: Observer<T>): Unsubscribe {
@@ -46,6 +51,10 @@ export class BaseObservable<T> {
 	}
 
 	protected SetIfChanged(newValue: T): void {
+		if (this._equalityComparison !== undefined && this._equalityComparison(newValue, this._value)) {
+			return;
+		}
+
 		if (typeof newValue !== "object" && newValue === this._value) {
 			return;
 		}
@@ -67,4 +76,5 @@ export class BaseObservable<T> {
 	private _nextSubscriptionId: number;
 	private _subscriptionCount: number;
 	private readonly _subscriptions: Subscriptions<T>;
+	private readonly _equalityComparison: EqualityComparison<T>|undefined;
 }

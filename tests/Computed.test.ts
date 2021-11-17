@@ -2,6 +2,7 @@ import { Observable } from "../src/Observable";
 import { Computed } from "../src/Computed";
 import { ThenObserverCallCountIs, ThenObserverWasCalled } from "./TestHelpers";
 import { IsTracking } from "../src/DependencyTracking";
+import { ObservableArray } from "../src/ObservableArray";
 
 let mockObserver: jest.Mock;
 
@@ -384,4 +385,46 @@ test("Should be usable as a ReadOnlyObservable", () => {
 	const c = new Computed(() => !t.Value);
 	const ro = c.AsReadOnly();
 	expect(ro.Value).toStrictEqual(false);
+});
+
+test("Should notify observers whenever the new value is detected as different - object types are never equal by default", () => {
+	const t1 = new ObservableArray<number>([]);
+	const t2 = new Observable<boolean>(false);
+	const c1 = new Computed(() => t1.Value.map(x => x * 2));
+	const c2 = new Computed(() => t2.Value ? c1.Value.map(x => x) : [1]);
+	const unsubscribe = c2.Subscribe(mockObserver);
+
+	expect(c2.Value).toStrictEqual([1]);
+
+	t1.push(3);
+	ThenObserverCallCountIs(mockObserver, 0);
+
+	t2.Value = true;
+	ThenObserverWasCalled(mockObserver, 1, [6]);
+
+	t1.Value = [3];
+	ThenObserverWasCalled(mockObserver, 2, [6]);
+
+	unsubscribe();
+});
+
+test("Should detect that a new value is the same as the existing value using a custom equality comparison function", () => {
+	const t1 = new ObservableArray<number>([]);
+	const t2 = new Observable<boolean>(false);
+	const c1 = new Computed(() => t1.Value.map(x => x * 2));
+	const c2 = new Computed(() => t2.Value ? c1.Value.map(x => x) : [1], (a, b) => Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((x, idx) => x === b[idx]));
+	const unsubscribe = c2.Subscribe(mockObserver);
+
+	expect(c2.Value).toStrictEqual([1]);
+
+	t1.push(3);
+	ThenObserverCallCountIs(mockObserver, 0);
+
+	t2.Value = true;
+	ThenObserverWasCalled(mockObserver, 1, [6]);
+
+	t1.Value = [3];
+	ThenObserverWasCalled(mockObserver, 1, [6]);
+
+	unsubscribe();
 });

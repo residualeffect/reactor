@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.0.0] - 2021-11-17
+### Added
+ * Added the ability to use a custom equality comparison on any observable
+   * This can be used to better detect when a value has not actually changed, preventing unnecessary subscriber notifications
+   * Reactor will still use it's built-in default equality comparison, which tends to over-detect changes rather than under-detect them
+### Changed
+* Changed how Computed tracks subscriptions to prevent extra change notifications that can happen when one Computed depends on another Computed
+### Breaking
+* Dropped official support for node 10.x
+
 ## [3.0.0] - 2021-04-14
 ### Changed
 * Changed behavior of ObservableArray.remove(x) such that it will remove all matching elements instead of just the first match (this also affects ObservableArray.toggle(x));

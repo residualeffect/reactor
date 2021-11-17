@@ -200,10 +200,40 @@ expect(IsBig(rt)).toStrictEqual(false);
 
 // Transform current value of readonly computed (result true)
 expect(IsBig(rc)).toStrictEqual(true);
-```
 
 // Or convert it to a read-only instance that is compatible with other observable types
 const r = t.AsReadOnly(); // r is of type ReadOnlyObservable<number>, which can only get the value or subscribe to changes
+```
+
+## Custom equality comparison
+
+By default, reactor will do it's best to quickly determine if a value has changed before notifying subscribers.  The default implementation is primitive, and tends to over-detect changes rather than under-detect them -- especially when working with arrays and objects.
+
+In some cases it may make sense to provide a custom equality comparison function to reactor, so that it can more intelligently notify subscribers of changes.
+
+```ts
+import { Observable } from "@residualeffect/reactor";
+
+// Create an observable with a custom equality comparison function
+const t = new Observable({ id: 3 }, (a, b) => a.id === b.id);
+
+// Observe changes
+const unsubscribe = t.Subscribe(observerFunc);
+
+// Change value with a new object that is "equivalent"
+t.Value = { id: 3 };
+
+// Subscriber was NOT notified
+// The default equality comparison would have notified here...
+
+// Change value with a new object that is not "equivalent"
+t.Value = { id: 4 };
+
+// Subscriber was notified!
+
+// Stop observing changes
+unsubscribe();
+```
 
 # Example Usage with React
 

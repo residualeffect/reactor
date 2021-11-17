@@ -1,9 +1,9 @@
-import { BaseObservable } from "./BaseObservable";
+import { BaseObservable, EqualityComparison } from "./BaseObservable";
 import type { ReadOnlyObservable } from "./ReadOnlyObservable";
 
 export class ObservableArray<T> extends BaseObservable<T[]> implements ReadOnlyObservable<readonly T[]> {
-	public constructor(initialValue: readonly T[]) {
-		super(initialValue.slice());
+	public constructor(initialValue: readonly T[], onChangeEqualityComparison?: EqualityComparison<readonly T[]>) {
+		super(initialValue.slice(), onChangeEqualityComparison);
 	}
 
 	public get Value(): readonly T[] {
