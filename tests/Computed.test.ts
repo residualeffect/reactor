@@ -10,7 +10,7 @@ beforeEach(() => {
 	mockObserver = jest.fn();
 });
 
-test("Should compute value", () => {
+test("Should compute value from another observable", () => {
 	const t = new Observable(true);
 	const c = new Computed(() => !t.Value);
 
@@ -158,7 +158,7 @@ test("Should identify when dependency starts being used and re-calculate value w
 		return t.Value;
 	});
 
-	expect(c.DependencyCount).toStrictEqual(1);
+	expect(c.DependencyCount).toStrictEqual(0);
 
 	c.Subscribe(mockObserver);
 
@@ -427,4 +427,49 @@ test("Should detect that a new value is the same as the existing value using a c
 	ThenObserverWasCalled(mockObserver, 1, [6]);
 
 	unsubscribe();
+});
+
+test("Should not call comparison if there are no subscribers", () => {
+	const mockCompare = jest.fn((a: number[], b: number[]) => a.length === b.length && a.every((x, idx) => x === b[idx]));
+	const t = new ObservableArray<number>([3]);
+	const c = new Computed(() => t.Value.map(x => x * 2), mockCompare);
+
+	expect(c.Value).toStrictEqual([6]);
+	expect(mockCompare.mock.calls.length).toStrictEqual(0);
+
+	t.push(6);
+
+	expect(c.Value).toStrictEqual([6, 12]);
+	expect(mockCompare.mock.calls.length).toStrictEqual(0);
+});
+
+test("Should call comparison when there are subscribers and the value changes", () => {
+	const mockCompare = jest.fn((a: number[], b: number[]) => a.length === b.length && a.every((x, idx) => x === b[idx]));
+	const t = new ObservableArray<number>([3]);
+	const c = new Computed(() => t.Value.map(x => x * 2), mockCompare);
+
+	const unsubscribe = c.Subscribe(mockObserver);
+
+	expect(c.Value).toStrictEqual([6]);
+	expect(mockCompare.mock.calls.length).toStrictEqual(0);
+
+	t.push(6);
+
+	expect(c.Value).toStrictEqual([6, 12]);
+	expect(mockCompare.mock.calls.length).toStrictEqual(1);
+	ThenObserverWasCalled(mockObserver, 1, [6, 12]);
+
+	t.push(8);
+
+	expect(c.Value).toStrictEqual([6, 12, 16]);
+	expect(mockCompare.mock.calls.length).toStrictEqual(2);
+	ThenObserverWasCalled(mockObserver, 2, [6, 12, 16]);
+
+	unsubscribe();
+
+	t.push(10);
+
+	expect(c.Value).toStrictEqual([6, 12, 16, 20]);
+	expect(mockCompare.mock.calls.length).toStrictEqual(2);
+	ThenObserverCallCountIs(mockObserver, 2);
 });

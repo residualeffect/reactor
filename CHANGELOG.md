@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.1.0] - 2021-11-18
+### Changed
+* Computed will no longer immediately calculate the value, it will wait until there is a subscriber or the value is retrieved
+* Computed will no longer perform equality comparison or try to notify observers if there are no subscriptions
+
 ## [4.0.0] - 2021-11-17
 ### Added
  * Added the ability to use a custom equality comparison on any observable

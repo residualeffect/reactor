@@ -13,8 +13,6 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 		this._isRefreshing = false;
 		this._isListening = false;
 		this._dependencies = {};
-
-		this.RefreshValue();
 	}
 
 	public get Value(): T {
@@ -71,7 +69,11 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 			this._isRefreshing = true;
 
 			const [value, dependencies] = TrackDependencies(this.ValueGenerator);
-			this.SetIfChanged(value);
+			if (this.SubscriptionCount > 0) {
+				this.SetIfChanged(value);
+			} else {
+				this._value = value;
+			}
 			this.UpdateDependencies(dependencies);
 
 			this._isRefreshing = false;
