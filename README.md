@@ -235,60 +235,11 @@ t.Value = { id: 4 };
 unsubscribe();
 ```
 
-# Example Usage with React
+# Using Reactor with React
 
 This library works well with react hooks (available starting with React 16.8), and can facilitate implementing fully functional, reactive application logic separately from your UI components.
 
-To do this, start by implementing a react hook for using observables, or also add one for generating temporary computed values so that your component only renders when the overall computed value changes):
-
-```ts
-import { useReducer, useLayoutEffect, useCallback, useRef, DependencyList } from "react";
-import { Computed, ReadOnlyObservable } from "@residualeffect/reactor";
-
-export function useObservable<T>(observable: ReadOnlyObservable<T>): T {
-	const [, triggerReact] = useReducer((x) => x + 1, 0);
-	useLayoutEffect(() => observable.Subscribe(triggerReact), [observable]);
-	return observable.Value;
-}
-
-export function useComputed<T>(computeFunc: () => T, deps?: DependencyList): T {
-	const callback = useCallback(computeFunc, deps ?? []);
-	const computed = useRef<Computed<T>|null>(null);
-	if (computed.current === null || computed.current.ValueGenerator !== callback) {
-		computed.current = new Computed(callback);
-	}
-	return useObservable(computed.current);
-}
-```
-
-Implement your application logic using reactor:
-
-```ts
-import { Observable, Computed } from "@residualeffect/reactor";
-
-export const t = new Observable(3);
-export const c = new Computed(() => t.Value * 2);
-
-export function DoSomething() {
-	t.Value = t.Value + 1;
-}
-```
-
-And then utilize your application logic in a react component:
-
-```tsx
-const ExampleComponent: React.FC = () => {
-	const value = useObservable(t);
-	const computedValue = useObservable(c);
-
-	return (
-		<>
-			<div>Value: {value} -- Computed Value: {computedValue}</div>
-			<button onClick={DoSomething}>Go</button>
-		</>
-	);
-};
-```
+Take advantage of [@residualeffect/rereactor](https://github.com/residualeffect/rereactor) or create your own!
 
 # License
 
