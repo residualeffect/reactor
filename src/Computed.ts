@@ -56,6 +56,14 @@ export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable
 		};
 	}
 
+	public IsEqualTo(otherValue: T): boolean {
+		if (!this._isListening) {
+			this.RefreshValue();
+		}
+
+		return super.IsEqualTo(otherValue);
+	}
+
 	public AsReadOnly(): ReadOnlyObservable<T> {
 		return this;
 	}

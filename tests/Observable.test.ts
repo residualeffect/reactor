@@ -181,3 +181,22 @@ test("Should be able to use a custom onChangeEqualityComparison to specifically 
 
 	unsubscribe();
 });
+
+test("Should be able to compare current value to another value", () => {
+	const t = new Observable("Hello");
+
+	expect(t.IsEqualTo("Hello")).toStrictEqual(true);
+	expect(t.IsEqualTo("Something Else")).toStrictEqual(false);
+	// @ts-expect-error testing when an invalid typed value is passed in to IsEqualTo
+	expect(t.IsEqualTo(3)).toStrictEqual(false);
+	// @ts-expect-error testing when an invalid typed value is passed in to IsEqualTo
+	expect(t.IsEqualTo({ something: "Hello" })).toStrictEqual(false);
+});
+
+test("Should be able to compare current value to another value using a custom equality comparison function", () => {
+	const t = new Observable("Hello", (newValue, oldValue) => newValue[0] == oldValue[0]);
+
+	expect(t.IsEqualTo("H")).toStrictEqual(true);
+	expect(t.IsEqualTo("Hey")).toStrictEqual(true);
+	expect(t.IsEqualTo("A")).toStrictEqual(false);
+});

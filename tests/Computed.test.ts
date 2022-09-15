@@ -473,3 +473,25 @@ test("Should call comparison when there are subscribers and the value changes", 
 	expect(mockCompare.mock.calls.length).toStrictEqual(2);
 	ThenObserverCallCountIs(mockObserver, 2);
 });
+
+test("Should be able to check if a computed value is equal to a provided value", () => {
+	const t = new Observable("Hello");
+	const c = new Computed(() => t.Value + t.Value);
+	expect(c.IsEqualTo("HelloHello")).toStrictEqual(true);
+});
+
+test("Should be able to utilize an observable.IsEqualTo when generating a computed value, and keep track of the observable as a dependency", () => {
+	const t = new Observable("Hello");
+	const c = new Computed(() => t.IsEqualTo("Hello"));
+	const unsubscribe =  c.Subscribe(mockObserver);
+
+	t.Value = "Testing";
+	ThenObserverWasCalled(mockObserver, 1, false);
+	expect(c.Value).toStrictEqual(false);
+
+	t.Value = "Hello";
+	ThenObserverWasCalled(mockObserver, 2, true);
+	expect(c.Value).toStrictEqual(true);
+
+	unsubscribe();
+});

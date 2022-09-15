@@ -45,6 +45,16 @@ export class BaseObservable<T> {
 		return this._subscriptionCount;
 	}
 
+	public IsEqualTo(otherValue: T): boolean {
+		const currentValue = this.Get();
+
+		if (this._equalityComparison !== undefined) {
+			return this._equalityComparison(otherValue, currentValue);
+		}
+
+		return typeof otherValue == typeof currentValue && otherValue === currentValue;
+	}
+
 	protected Get(): T {
 		ReportUsage(this as BaseObservable<unknown>);
 		return this._value;
