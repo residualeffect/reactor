@@ -8,7 +8,7 @@ beforeEach(() => {
 	mockObserver = jest.fn();
 });
 
-test("Should handle value generators that sometimes throw string errors", () => {
+test("Should handle value generators that sometimes throw Errors", () => {
 	const shouldFail = new Observable(false);
 	const badValueGenerator = (): number => {
 		if (shouldFail.Value) {
