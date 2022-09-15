@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.2.0] - 2022-09-15
+## Added
+ * Added the ability to compare a provided value against an observable's current value, also utilizing the observable's custom equality comparison function if defined
+
 ## [4.1.0] - 2021-11-18
 ### Changed
 * Computed will no longer immediately calculate the value, it will wait until there is a subscriber or the value is retrieved
