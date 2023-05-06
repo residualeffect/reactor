@@ -5,7 +5,6 @@
 		"moduleResolution": "node",
 		"declaration": true,
 		"esModuleInterop": true,
-		"importsNotUsedAsValues": "error",
 		"incremental": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
