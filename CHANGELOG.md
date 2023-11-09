@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.3.0] - 2023-11-08
+### Fixed
+* FilteredObservable was comparing the unfiltered new value with the filtered old value, and skipping notifications to observers when it shouldn't have been.  This was particularly noticeable when used with the RateLimiter.
+
 ## [4.2.1] - 2022-09-15
 ### Fixed
 * ReadOnlyObservable can now also take advantage of new IsEqualTo function

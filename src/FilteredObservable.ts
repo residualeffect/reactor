@@ -10,10 +10,6 @@ export class FilteredObservable<T> extends Observable<T> {
 	}
 
 	protected SetIfChanged(newValue: T): void {
-		if (typeof newValue !== "object" && newValue === this._value) {
-			return;
-		}
-
 		this._valueFilter(newValue, (filteredNewValue) => {
 			super.SetIfChanged(filteredNewValue);
 		});

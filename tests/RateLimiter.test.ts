@@ -54,6 +54,25 @@ test("Should de-duplicate changes", () => {
 	expect(t.Value).toStrictEqual(35);
 });
 
+test("Should not notify subscribers if value is changed and then undone", () => {
+	const t = new FilteredObservable(10, RateLimiter(RateLimitType.Debounce, 1000));
+
+	t.Subscribe(mockObserver);
+
+	expect(t.Value).toStrictEqual(10);
+
+	t.Value = 15;
+	t.Value = 10;
+
+	ThenObserverCallCountIs(mockObserver, 0);
+	expect(t.Value).toStrictEqual(10);
+
+	jest.advanceTimersByTime(1000);
+
+	ThenObserverCallCountIs(mockObserver, 0);
+	expect(t.Value).toStrictEqual(10);
+});
+
 test("Should reset notification timer after every change when using debounce rate limiter", () => {
 	const t = new FilteredObservable(3, RateLimiter(RateLimitType.Debounce, 1000));
 
