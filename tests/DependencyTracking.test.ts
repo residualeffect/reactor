@@ -153,7 +153,7 @@ test("Should detect computed value generators that depend on themselves", () => 
 
 	const action = (): void => {
 		target.Value = c;
-		c.Value;
+		void(c.Value);
 	};
 
 	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:
@@ -211,7 +211,7 @@ test("Should detect computed value generators that indirectly depend on themselv
 
 	const action = (): void => {
 		target.Value = e;
-		e.Value;
+		void(e.Value);
 	};
 
 	const expectedErrorMessage = `An error occurred while generating a computed value.  Value Generator:

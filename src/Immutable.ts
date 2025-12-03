@@ -1,5 +1,6 @@
 // Hopefully this becomes built in to typescript!
 // See: https://github.com/microsoft/TypeScript/issues/13923
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 type ImmutablePrimitive = undefined | null | boolean | string | number | Function;
 

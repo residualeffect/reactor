@@ -5,7 +5,6 @@ import type { ReadOnlyObservable } from "./ReadOnlyObservable";
 
 export class Computed<T> extends BaseObservable<T> implements ReadOnlyObservable<T> {
 	public constructor(valueGenerator: () => T, onChangeEqualityComparison?: EqualityComparison<T>) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		super(undefined!, onChangeEqualityComparison);
 
 		this.ValueGenerator = valueGenerator;
