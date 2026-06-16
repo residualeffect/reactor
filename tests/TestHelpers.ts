@@ -1,9 +1,10 @@
+import { expect, Mock } from "vitest"
 
-export function ThenObserverCallCountIs(mockObserver: jest.Mock, totalCalls: number): void {
+export function ThenObserverCallCountIs(mockObserver: Mock, totalCalls: number): void {
 	expect(mockObserver.mock.calls.length).toStrictEqual(totalCalls);
 }
 
-export function ThenObserverWasCalled<T>(mockObserver: jest.Mock, totalCalls: number, newValue: T): void {
+export function ThenObserverWasCalled<T>(mockObserver: Mock, totalCalls: number, newValue: T): void {
 	ThenObserverCallCountIs(mockObserver, totalCalls);
 	if (totalCalls === 0) {
 		throw new Error("Use 'ThenObserverCallCountIs()' instead of 'ThenObserverWasCalled()' to assert 0 calls");

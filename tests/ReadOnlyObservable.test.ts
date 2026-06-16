@@ -4,16 +4,17 @@ import { FilteredObservable } from "../src/FilteredObservable";
 import { ObservableArray } from "../src/ObservableArray";
 import { ObservableObject } from "../src/ObservableObject";
 import { ThenObserverWasCalled } from "./TestHelpers";
+import { Mock, vi, beforeEach, test, expect } from "vitest";
 
 interface TestObject {
 	A: string;
 	B: number;
 }
 
-let mockObserver: jest.Mock;
+let mockObserver: Mock;
 
 beforeEach(() => {
-	mockObserver = jest.fn();
+	mockObserver = vi.fn();
 });
 
 test("Should allow Observable to be used as generic read-only value", () => {

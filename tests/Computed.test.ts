@@ -3,11 +3,12 @@ import { Computed } from "../src/Computed";
 import { ThenObserverCallCountIs, ThenObserverWasCalled } from "./TestHelpers";
 import { IsTracking } from "../src/DependencyTracking";
 import { ObservableArray } from "../src/ObservableArray";
+import { Mock, vi, beforeEach, test, expect } from "vitest";
 
-let mockObserver: jest.Mock;
+let mockObserver: Mock;
 
 beforeEach(() => {
-	mockObserver = jest.fn();
+	mockObserver = vi.fn();
 });
 
 test("Should compute value from another observable", () => {
@@ -296,7 +297,7 @@ ${valueGenerator.toString()}
 
 The error was: TEST ERROR MESSAGE`;
 
-	expect(action).toThrow(new Error(expectedErrorMessage));
+	expect(action).toThrow(expectedErrorMessage);
 
 	expect(IsTracking()).toStrictEqual(false);
 });
@@ -310,7 +311,7 @@ test("Should track large dependency chains", () => {
 
 	for (let i = 1; i < 1000; i++) {
 		dependencyChain[i] = new Computed(() => dependencyChain[i-1].Value + i);
-		dependencyChain[i].Subscribe(jest.fn());
+		dependencyChain[i].Subscribe(vi.fn());
 	}
 
 	const lastDependency = dependencyChain[999];
@@ -326,7 +327,7 @@ test("Should track large sets of dependencies", () => {
 	const manyObservables: Observable<number>[] = [];
 	for (let i = 0; i < 1000; i++) {
 		manyObservables[i] = new Observable(i);
-		manyObservables[i].Subscribe(jest.fn());
+		manyObservables[i].Subscribe(vi.fn());
 	}
 
 	const c = new Computed(() => {
@@ -430,7 +431,7 @@ test("Should detect that a new value is the same as the existing value using a c
 });
 
 test("Should not call comparison if there are no subscribers", () => {
-	const mockCompare = jest.fn((a: number[], b: number[]) => a.length === b.length && a.every((x, idx) => x === b[idx]));
+	const mockCompare = vi.fn((a: number[], b: number[]) => a.length === b.length && a.every((x, idx) => x === b[idx]));
 	const t = new ObservableArray<number>([3]);
 	const c = new Computed(() => t.Value.map(x => x * 2), mockCompare);
 
@@ -444,7 +445,7 @@ test("Should not call comparison if there are no subscribers", () => {
 });
 
 test("Should call comparison when there are subscribers and the value changes", () => {
-	const mockCompare = jest.fn((a: number[], b: number[]) => a.length === b.length && a.every((x, idx) => x === b[idx]));
+	const mockCompare = vi.fn((a: number[], b: number[]) => a.length === b.length && a.every((x, idx) => x === b[idx]));
 	const t = new ObservableArray<number>([3]);
 	const c = new Computed(() => t.Value.map(x => x * 2), mockCompare);
 

@@ -1,17 +1,18 @@
 import { Observable, Computed, ObservableArray, ObservableObject, FilteredObservable, RateLimiter, RateLimitType, ReadOnlyObservable } from "../src";
 import { ThenObserverCallCountIs, ThenObserverWasCalled } from "./TestHelpers";
+import { Mock, vi, beforeEach, test, expect } from "vitest";
 
 interface SomeType {
 	PropertyA: string;
 	PropertyB: string;
 }
 
-let observerFunc: jest.Mock;
+let observerFunc: Mock;
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 beforeEach(() => {
-	observerFunc = jest.fn();
+	observerFunc = vi.fn();
 });
 
 test("README: Observable", () => {
@@ -78,7 +79,7 @@ test("README: ObservableObject", () => {
 	ThenObserverWasCalled(observerFunc, 1, { PropertyA: "Testing", PropertyB: "A Lot" });
 
 	// Note that modifying the value is not allowed
-	// @ts-expect-error You should not be able to modify this property, it should be immutable
+	// @ts-expect-error You should not be able to modify this property, it is immutable
 	t.Value.PropertyA = "Tricky"; // ERROR !!!
 	
 	// However, you can apply updates to properties like so
@@ -132,7 +133,7 @@ test("README: FilteredObservable", () => {
 	expect(r.Value).toStrictEqual(3);
 	ThenObserverCallCountIs(observerFunc, 0);
 	// Wait 200ms... value is now 5, and the observer was notified
-	jest.advanceTimersByTime(200);
+	vi.advanceTimersByTime(200);
 	expect(r.Value).toStrictEqual(5);
 	ThenObserverWasCalled(observerFunc, 1, 5);
 
@@ -143,7 +144,7 @@ test("README: FilteredObservable", () => {
 	expect(r.Value).toStrictEqual(5);
 	ThenObserverCallCountIs(observerFunc, 1);
 	// Wait 200ms... value is now 7, and the observer was notified once
-	jest.advanceTimersByTime(200);
+	vi.advanceTimersByTime(200);
 	expect(r.Value).toStrictEqual(7);
 	ThenObserverWasCalled(observerFunc, 2, 7);
 

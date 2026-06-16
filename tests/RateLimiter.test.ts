@@ -1,13 +1,14 @@
 import { FilteredObservable } from "../src/FilteredObservable";
 import { RateLimiter, RateLimitType } from "../src/RateLimiter";
 import { ThenObserverCallCountIs, ThenObserverWasCalled } from "./TestHelpers";
+import { Mock, vi, beforeEach, test, expect } from "vitest";
 
-let mockObserver: jest.Mock;
+let mockObserver: Mock;
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 beforeEach(() => {
-	mockObserver = jest.fn();
+	mockObserver = vi.fn();
 });
 
 test("Should only notify subscribers after delay period has passed", () => {
@@ -22,12 +23,12 @@ test("Should only notify subscribers after delay period has passed", () => {
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(true);
 
-	jest.advanceTimersByTime(999);
+	vi.advanceTimersByTime(999);
 
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(true);
 
-	jest.advanceTimersByTime(1);
+	vi.advanceTimersByTime(1);
 
 	ThenObserverWasCalled(mockObserver, 1, false);
 	expect(t.Value).toStrictEqual(false);
@@ -48,7 +49,7 @@ test("Should de-duplicate changes", () => {
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(10);
 
-	jest.advanceTimersByTime(1000);
+	vi.advanceTimersByTime(1000);
 
 	ThenObserverWasCalled(mockObserver, 1, 35);
 	expect(t.Value).toStrictEqual(35);
@@ -67,7 +68,7 @@ test("Should not notify subscribers if value is changed and then undone", () => 
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(10);
 
-	jest.advanceTimersByTime(1000);
+	vi.advanceTimersByTime(1000);
 
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(10);
@@ -83,19 +84,19 @@ test("Should reset notification timer after every change when using debounce rat
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(3);
 
-	jest.advanceTimersByTime(999);
+	vi.advanceTimersByTime(999);
 
 	t.Value = 5;
 
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(3);
 
-	jest.advanceTimersByTime(999);
+	vi.advanceTimersByTime(999);
 
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(3);
 
-	jest.advanceTimersByTime(1);
+	vi.advanceTimersByTime(1);
 
 	ThenObserverWasCalled(mockObserver, 1, 5);
 	expect(t.Value).toStrictEqual(5);
@@ -112,26 +113,26 @@ test("Should still notify subscribers at fixed intervals when using throttle rat
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(3);
 
-	jest.advanceTimersByTime(999);
+	vi.advanceTimersByTime(999);
 
 	t.Value = 5;
 
 	ThenObserverCallCountIs(mockObserver, 0);
 	expect(t.Value).toStrictEqual(3);
 
-	jest.advanceTimersByTime(1);
+	vi.advanceTimersByTime(1);
 
 	ThenObserverWasCalled(mockObserver, 1, 5);
 	expect(t.Value).toStrictEqual(5);
 
 	t.Value = 8;
 
-	jest.advanceTimersByTime(999);
+	vi.advanceTimersByTime(999);
 
 	ThenObserverCallCountIs(mockObserver, 1);
 	expect(t.Value).toStrictEqual(5);
 
-	jest.advanceTimersByTime(1);
+	vi.advanceTimersByTime(1);
 
 	ThenObserverWasCalled(mockObserver, 2, 8);
 	expect(t.Value).toStrictEqual(8);

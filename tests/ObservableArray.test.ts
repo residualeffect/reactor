@@ -1,11 +1,12 @@
 import { ObservableArray } from "../src/ObservableArray";
 import { Computed } from "../src/Computed";
 import { ThenObserverWasCalled, ThenObserverCallCountIs } from "./TestHelpers";
+import { Mock, vi, beforeEach, test, expect } from "vitest";
 
-let mockObserver: jest.Mock;
+let mockObserver: Mock;
 
 beforeEach(() => {
-	mockObserver = jest.fn();
+	mockObserver = vi.fn();
 });
 
 test("Should be able to read value of observable array", () => {

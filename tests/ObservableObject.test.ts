@@ -1,6 +1,7 @@
 import { ObservableObject } from "../src/ObservableObject";
 import { Computed } from "../src/Computed";
 import { ThenObserverWasCalled, ThenObserverCallCountIs } from "./TestHelpers";
+import { Mock, vi, beforeEach, test, expect } from "vitest";
 
 interface NestedObject {
 	A: number;
@@ -12,10 +13,10 @@ interface TestSimpleObject {
 	C: NestedObject;
 }
 
-let mockObserver: jest.Mock;
+let mockObserver: Mock;
 
 beforeEach(() => {
-	mockObserver = jest.fn();
+	mockObserver = vi.fn();
 });
 
 test("Should notify observers on object change", () => {

@@ -1,14 +1,15 @@
 import { Observable } from "../src/Observable";
 import { ThenObserverWasCalled, ThenObserverCallCountIs } from "./TestHelpers";
+import { Mock, vi, beforeEach, test, expect } from "vitest";
 
-let mockObserver: jest.Mock;
-let mockObserverTwo: jest.Mock;
-let mockObserverThree: jest.Mock;
+let mockObserver: Mock;
+let mockObserverTwo: Mock;
+let mockObserverThree: Mock;
 
 beforeEach(() => {
-	mockObserver = jest.fn();
-	mockObserverTwo = jest.fn();
-	mockObserverThree = jest.fn();
+	mockObserver = vi.fn();
+	mockObserverTwo = vi.fn();
+	mockObserverThree = vi.fn();
 });
 
 test("Should have value", () => {

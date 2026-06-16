@@ -1,10 +1,11 @@
 import { FilteredObservable } from "../src/FilteredObservable";
 import { ThenObserverCallCountIs, ThenObserverWasCalled } from "./TestHelpers";
+import { Mock, vi, beforeEach, test, expect } from "vitest";
 
-let mockObserver: jest.Mock;
+let mockObserver: Mock;
 
 beforeEach(() => {
-	mockObserver = jest.fn();
+	mockObserver = vi.fn();
 });
 
 test("Should not apply filter to initial value", () => {

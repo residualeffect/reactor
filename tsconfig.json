@@ -17,7 +17,6 @@
 		"strict": true,
 		"rootDir": "./src",
 		"outDir": "./lib",
-		"types": ["jest", "node", "@types/jest"],
 		"lib": ["DOM", "ES2018"],
 		"tsBuildInfoFile": ".output/.tsbuildinfo"
 	},

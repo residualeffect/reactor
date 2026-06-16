@@ -1,11 +1,12 @@
 import { Observable } from "../src/Observable";
 import { Computed } from "../src/Computed";
 import { IsTracking } from "../src/DependencyTracking";
+import { Mock, vi, beforeEach, test, expect } from "vitest";
 
-let mockObserver: jest.Mock;
+let mockObserver: Mock;
 
 beforeEach(() => {
-	mockObserver = jest.fn();
+	mockObserver = vi.fn();
 });
 
 test("Should handle value generators that sometimes throw Errors", () => {
@@ -42,7 +43,7 @@ ${badValueGenerator.toString()}
 
 Nested error (depth 1): Something bad happened`;
 
-	expect(action).toThrow(new Error(expectedErrorMessage));
+	expect(action).toThrow(expectedErrorMessage);
 
 	expect(IsTracking()).toStrictEqual(false);
 
@@ -72,7 +73,7 @@ ${valueGenerator.toString()}
 
 The error was: STRING ERROR MESSAGE`;
 
-	expect(action).toThrow(new Error(expectedErrorMessage));
+	expect(action).toThrow(expectedErrorMessage);
 
 	expect(IsTracking()).toStrictEqual(false);
 
@@ -102,7 +103,7 @@ ${valueGenerator.toString()}
 
 The error was: null`;
 
-	expect(action).toThrow(new Error(expectedErrorMessage));
+	expect(action).toThrow(expectedErrorMessage);
 
 	expect(IsTracking()).toStrictEqual(false);
 
@@ -130,7 +131,7 @@ test("Should handle value generators that sometimes throw undefined errors", () 
 
 ${valueGenerator.toString()}`;
 
-	expect(action).toThrow(new Error(expectedErrorMessage));
+	expect(action).toThrow(expectedErrorMessage);
 
 	expect(IsTracking()).toStrictEqual(false);
 
@@ -162,7 +163,7 @@ ${valueGenerator.toString()}
 
 The error was: Circular dependency detected!`;
 
-	expect(action).toThrow(new Error(expectedErrorMessage));
+	expect(action).toThrow(expectedErrorMessage);
 });
 
 test("Should detect computed value generators that depend on themselves, even when computed value is being observed", () => {
@@ -189,7 +190,7 @@ ${valueGenerator.toString()}
 
 The error was: Circular dependency detected!`;
 
-	expect(action).toThrow(new Error(expectedErrorMessage));
+	expect(action).toThrow(expectedErrorMessage);
 });
 
 test("Should detect computed value generators that indirectly depend on themselves", () => {
@@ -224,7 +225,7 @@ ${outerValueGenerator.toString()}
 
 Nested error (depth 1): Circular dependency detected!`;
 
-	expect(action).toThrow(new Error(expectedErrorMessage));
+	expect(action).toThrow(expectedErrorMessage);
 });
 
 test("Should detect circular dependencies for value generates that modify dependencies", () => {
@@ -248,5 +249,5 @@ ${valueGenerator.toString()}
 
 The error was: Circular dependency detected!`;
 
-	expect(action).toThrow(new Error(expectedErrorMessage));
+	expect(action).toThrow(expectedErrorMessage);
 });
