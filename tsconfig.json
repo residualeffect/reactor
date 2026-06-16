@@ -1,11 +1,12 @@
 {
 	"compilerOptions": {
-		"target": "es5",
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"target": "esnext",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
 		"declaration": true,
 		"esModuleInterop": true,
 		"incremental": true,
+		"isolatedModules": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
@@ -14,7 +15,9 @@
 		"sourceMap": false,
 		"skipLibCheck": false,
 		"strict": true,
-		"outDir": "lib",
+		"rootDir": "./src",
+		"outDir": "./lib",
+		"types": ["jest", "node", "@types/jest"],
 		"lib": ["DOM", "ES2018"],
 		"tsBuildInfoFile": ".output/.tsbuildinfo"
 	},

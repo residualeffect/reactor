@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.0.0] - 2026-06-15
+### Changed
+* Updated build output to target modern javascript versions
+
 ## [4.3.0] - 2023-11-08
 ### Fixed
 * FilteredObservable was comparing the unfiltered new value with the filtered old value, and skipping notifications to observers when it shouldn't have been.  This was particularly noticeable when used with the RateLimiter.
